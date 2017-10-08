@@ -5,6 +5,8 @@
 *.iml
 *.egg-info
 *dist/
+*build
+*.log
 
 # Image formats
 *.jpg
