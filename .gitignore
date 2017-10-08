@@ -1,0 +1,16 @@
+.DS_Store
+*.swp
+*__pycache__
+*.idea
+*.iml
+*.egg-info
+*dist/
+
+# Image formats
+*.jpg
+*.jpeg
+*.gif
+*.png
+*.svg
+*.ico
+*.webp
