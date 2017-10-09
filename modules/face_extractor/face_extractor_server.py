@@ -57,14 +57,15 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
         image_links = face_extraction_request['image_links']
 
         for index, image_link in enumerate(image_links):
-            image_filepath = FaceExtractorServer.save_image(platform, handle, image_link, index, RESULT_FOLDER)
+            image_filepath = FaceExtractorServer.save_image(platform, handle, image_link, index)
             FaceExtractor.extract_face(image_filepath)
 
     @staticmethod
-    def save_image(platform, handle, image_link, index, destination):
+    def save_image(platform, handle, image_link, index):
         extension = os.path.splitext(image_link)[1]
-        image_filename = platform + '-' + handle + '-' + str(index+1) + extension
-        image_filepath = RESULT_FOLDER + image_filename
+        open(RESULT_FOLDER + platform + '-' + handle + '.id', 'a').close()
+        image_filename = str(index+1) + '---' + platform + '-' + handle + extension
+        image_filepath = RESULT_FOLDER + 'original-' + image_filename
         urlretrieve(image_link, image_filepath)
         logging.info("Image has been successfully downloaded and saved as {0}".format(image_filepath))
         return image_filepath
@@ -85,8 +86,6 @@ class FaceExtractionRequest(dict):
 class FaceExtractor:
     @staticmethod
     def extract_face(image_filepath):
-        print(CASCADE_PATH)
-        print(image_filepath)
         logging.info("Processing {0}".format(image_filepath))
 
         # Create the Haar cascade
@@ -110,7 +109,7 @@ class FaceExtractor:
         # Draw a rectangle around the faces
         for (x, y, w, h) in faces:
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        annotated_filename = os.path.splitext(image_filepath)[0] + "-annotated" + RESULT_EXTENSION
+        annotated_filename = os.path.dirname(image_filepath) + '/edge-' + os.path.basename(image_filepath)
         cv2.imwrite(annotated_filename, image)
         logging.info("Saving face-annotated image as {0}".format(annotated_filename))
 
@@ -119,15 +118,13 @@ class FaceExtractor:
             for (x, y, w, h) in faces:
                 face_grayscale = gray[y:y+h, x:x+w]
                 face_grayscale_resized = cv2.resize(face_grayscale, FACE_SIZE)
-                face_filename = os.path.splitext(image_filepath)[0] + "-face" + RESULT_EXTENSION
+                face_filename = os.path.dirname(image_filepath) + '/face-' + os.path.basename(image_filepath)
                 cv2.imwrite(face_filename, face_grayscale_resized)
                 logging.info("Saving extracted grayscale face as {0}".format(face_filename))
+        elif len(faces) == 0:
+            logging.info("Found no faces. Not extracting any faces")
         else:
             logging.info("Found multiple faces. Not extracting any faces")
-
-
-def main():
-    print("LOL")
 
 
 def initialize_logger():
