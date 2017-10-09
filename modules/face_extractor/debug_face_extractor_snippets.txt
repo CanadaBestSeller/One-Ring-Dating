@@ -1,3 +1,7 @@
+# EVERYTHING MUST BE RUN FROM THE ROOT DIRECTORY!!!
+# Test the face extractor
+# from modules.face_extractor.face_extractor_server import FaceExtractor; FaceExtractor.extract_face('phase_1_selection/okc-alison-brie-1.jpg')
+
 # From the root package, issue "python3 setup.up install"
 # From the root package, issue "python3 modules/face_extractor/face_extractor_server.py localhost 7000"
 # From the root package, "hephaestus", open the Python interpreter
@@ -7,9 +11,7 @@ import socket
 from modules.face_extractor.face_extractor_server import FaceExtractionRequest
 
 s = socket.socket()
-s.connect(('localhost', int(7006)))
-image_links = ['https://images-na.ssl-images-amazon.com/images/M/MV5BMTY2MDc2NjY1NF5BMl5BanBnXkFtZTcwMDY2MjE3Nw@@._V1_UY1200_CR84,0,630,1200_AL_.jpg']
-request = FaceExtractionRequest('okc', 'alison-brie', image_links)
+s.connect(('localhost', int(7000)))
+image_links = ['https://i.pinimg.com/736x/8a/0d/a8/8a0da86c832393adfbcf9537cf328549--brown-hair-colors-dark-brown-color.jpg']
+request = FaceExtractionRequest('okc', 'alison-brie2', image_links)
 s.send(json.dumps(request).encode())
-
-from face_extractor import FaceExtractor; FaceExtractor.extract_face('../../phase_1_selection/okc-alison-brie-1.jpg')
