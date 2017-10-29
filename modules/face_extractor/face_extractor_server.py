@@ -11,7 +11,7 @@ import cv2
 
 
 # Configs
-RESULT_FOLDER = "phase_1_selection/"
+RESULT_FOLDER = "phase_1_pool/"
 ESSENTIAL_FOLDERS = [RESULT_FOLDER + NAME for NAME in ['ids/', 'faces/', 'edges/', 'originals/']]
 CASCADE_PATH = os.path.abspath("modules/face_extractor/haarcascade_frontalface_default.xml")
 RESULT_EXTENSION = ".jpg"

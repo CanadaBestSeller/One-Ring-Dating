@@ -1,6 +1,6 @@
 # EVERYTHING MUST BE RUN FROM THE ROOT DIRECTORY!!!
 # Test the face extractor
-# from modules.face_extractor.face_extractor_server import FaceExtractor; FaceExtractor.extract_face('phase_1_selection/okc-alison-brie-1.jpg')
+# from modules.face_extractor.face_extractor_server import FaceExtractor; FaceExtractor.extract_face('phase_1_pool/okc-alison-brie-1.jpg')
 
 # From the root package, issue "python3 setup.up install"
 # From the root package, issue "python3 modules/face_extractor/face_extractor_server.py localhost 7000"
