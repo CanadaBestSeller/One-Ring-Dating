@@ -1,10 +1,9 @@
 # EVERYTHING MUST BE RUN FROM THE ROOT DIRECTORY!!!
-# Test the face extractor
-# from modules.face_extractor.face_extractor_server import FaceExtractor; FaceExtractor.extract_face('phase_1_pool/okc-alison-brie-1.jpg')
 
 # From the root package, issue "python3 setup.up install"
+
 # From the root package, issue bash command: export PYTHONPATH=$PYTHONPATH:$PWD/heph_modules
-# From the root package, issue "python3 modules/face_extractor/face_extractor_server.py localhost 7000"
+# From the root package, issue "python3 heph_modules/face_extractor/face_extractor_server.py localhost 7000"
 # From the root package, "hephaestus", open the Python interpreter
 
 

@@ -50,11 +50,14 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     def close(self): pass  # Contract
 
     @staticmethod
-    def process_extraction_request(face_extraction_request):
+    def process_extraction_request(profile_rawtext):
+
+        logging.info('[Server] Processing request...\n')
+
         FaceExtractorServer.ensure_face_folders_exist()
-        platform = face_extraction_request['platform']
-        handle = face_extraction_request['handle']
-        image_links = face_extraction_request['image_links']
+        platform = profile_rawtext['platform']
+        handle = profile_rawtext['handle']
+        image_links = profile_rawtext['image_links']
 
         for index, image_link in enumerate(image_links):
             image_folder_path, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
@@ -102,7 +105,7 @@ if __name__ == '__main__':
     serving_host, serving_port = sys.argv[1], int(sys.argv[2])
     initialize_logger()
 
-    logging.info('[Server] \n'
+    logging.info('\n'
                  '\n-----------------------------------'
                  '\nFace Extraction Server online!'
                  '\nServing requests @ {}:{}'

@@ -1,0 +1,8 @@
+# EVERYTHING MUST BE RUN FROM THE ROOT DIRECTORY!!!
+
+# From the root package, issue "python3 setup.up install"
+
+# From the root package, issue bash command: export PYTHONPATH=$PYTHONPATH:$PWD/heph_modules
+# From the root package, issue "python3 heph_modules/face_extractor/face_extractor_server.py localhost 7000"
+# From the root package, issue "python3 heph_modules/profile_colletors/profile_notifier.py
+
