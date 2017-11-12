@@ -3,15 +3,17 @@
 # from modules.face_extractor.face_extractor_server import FaceExtractor; FaceExtractor.extract_face('phase_1_pool/okc-alison-brie-1.jpg')
 
 # From the root package, issue "python3 setup.up install"
+# From the root package, issue bash command: export PYTHONPATH=$PYTHONPATH:$PWD/heph_modules
 # From the root package, issue "python3 modules/face_extractor/face_extractor_server.py localhost 7000"
 # From the root package, "hephaestus", open the Python interpreter
 
+
 import json
 import socket
-from modules.face_extractor.face_extractor_server import FaceExtractionRequest
+from heph_modules.models.profile_rawtext import ProfileRawtext
 
-s = socket.socket()
-s.connect(('localhost', int(7000)))
+face_extractor_endpoint = socket.socket()
+face_extractor_endpoint.connect(('localhost', int(7000)))
 image_links = [
 'https://i.pinimg.com/736x/8a/0d/a8/8a0da86c832393adfbcf9537cf328549--brown-hair-colors-dark-brown-color.jpg',
 'http://zntent.com/wp-content/uploads/2014/11/alison-brie-04.jpg',
@@ -19,5 +21,5 @@ image_links = [
 'http://static1.refinery29.com/bin/entry/2dc/x,80/1147896/alison-brie-community2.jpg',
 'https://friskyforks.com/wp-content/uploads/2017/02/brie-cheese.jpg'
 ]
-request = FaceExtractionRequest('okc', 'alison-brie', image_links)
-s.send(json.dumps(request).encode())
+profile = ProfileRawtext('okc', 'alison-brie', image_links)
+face_extractor_endpoint.send(json.dumps(profile).encode())

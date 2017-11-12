@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export PYTHONPATH=$PYTHONPATH:$PWD/heph_modules
+
 HEPH_SERVING_HOST=localhost
 HEPH_FACE_EXTRACTOR_SERVER_PORT=7777
 

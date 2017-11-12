@@ -5,15 +5,17 @@ import logging
 import os
 import socketserver
 import sys
+
 from urllib.request import urlretrieve
 
 import cv2
 
+from heph_modules.models.profile_rawtext import ProfileRawtext
 
 # Configs
 RESULT_FOLDER = "phase_1_pool/"
 ESSENTIAL_FOLDERS = [RESULT_FOLDER + NAME for NAME in ['ids/', 'faces/', 'edges/', 'originals/']]
-CASCADE_PATH = os.path.abspath("modules/face_extractor/haarcascade_frontalface_default.xml")
+CASCADE_PATH = os.path.abspath("heph_modules/face_extractor/haarcascade_frontalface_default.xml")
 RESULT_EXTENSION = ".jpg"
 FACE_SIZE = (100, 100)
 RESIZE_TOP_PIXELS = 300
@@ -26,7 +28,7 @@ LOG_FORMAT = '[FACE_EXTRACTOR_SERVER] %(asctime)s - %(name)s - %(levelname)s - %
 class FaceExtractorServer(socketserver.BaseRequestHandler):
     """
     Handles requests from inbound port.
-    Request must be a JSON of type FaceExtractionRequest (see below this class)
+    Request input must be a JSON of type ProfileRawtext (see import above)
 
     *** This server does several things ***
     1. Handles a request, given the platform, handle, and list of image links
@@ -42,8 +44,8 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         json_data = json.loads(self.data.decode())
         logging.info('Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
-        face_extraction_request = FaceExtractionRequest(**json_data)
-        FaceExtractorServer.process(face_extraction_request)
+        profile_rawtext = ProfileRawtext(**json_data)
+        FaceExtractorServer.process_extraction_request(profile_rawtext)
 
     def setup(self): pass  # Contract
 
@@ -52,7 +54,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     def close(self): pass  # Contract
 
     @staticmethod
-    def process(face_extraction_request):
+    def process_extraction_request(face_extraction_request):
         FaceExtractorServer.ensure_face_folders_exist()
         platform = face_extraction_request['platform']
         handle = face_extraction_request['handle']
@@ -76,18 +78,6 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
         for folder_path in ESSENTIAL_FOLDERS:
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
-
-
-class FaceExtractionRequest(dict):
-    """
-    Easy de/serialization because we're inheriting from dictionary. Works nicely with Python's json module:
-    serialized_request = json.dumps(FaceExtractionRequest('a', 'b'))
-    deserialized_request = FaceExtractionRequest(**(json.loads(serialized_request))
-    """
-    def __init__(self, platform, handle, image_links):
-        dict.__init__(self, platform=platform)
-        dict.__init__(self, handle=handle)
-        dict.__init__(self, image_links=image_links)
 
 
 class FaceExtractor:
