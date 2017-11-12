@@ -8,17 +8,13 @@ import sys
 
 from urllib.request import urlretrieve
 
-import cv2
-
+from heph_modules.face_extractor.face_extractor import FaceExtractor
 from heph_modules.models.profile_rawtext import ProfileRawtext
 
 # Configs
 RESULT_FOLDER = "phase_1_pool/"
 ESSENTIAL_FOLDERS = [RESULT_FOLDER + NAME for NAME in ['ids/', 'faces/', 'edges/', 'originals/']]
-CASCADE_PATH = os.path.abspath("heph_modules/face_extractor/haarcascade_frontalface_default.xml")
 RESULT_EXTENSION = ".jpg"
-FACE_SIZE = (100, 100)
-RESIZE_TOP_PIXELS = 300
 
 # Logging
 LOG_NAME = 'face_extractor.log'
@@ -78,52 +74,6 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
         for folder_path in ESSENTIAL_FOLDERS:
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
-
-
-class FaceExtractor:
-    @staticmethod
-    def extract_face(image_folder_path, image_filename):
-        logging.info("Processing [{1}] @ {0}".format(image_folder_path, image_filename))
-
-        # Create the Haar cascade
-        face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
-
-        # Read the image
-        image = cv2.imread(image_folder_path + image_filename)
-        resize_ratio = RESIZE_TOP_PIXELS/image.shape[1]
-        image = cv2.resize(image, (0, 0,), fx=resize_ratio, fy=resize_ratio)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        # Detect faces in the image
-        faces = face_cascade.detectMultiScale(
-            gray,
-            scaleFactor=1.1,
-            minNeighbors=20,
-            minSize=(30, 30),
-        )
-        logging.info("Faces found: {0}.".format(len(faces)))
-
-        # Draw a rectangle around the faces
-        for (x, y, w, h) in faces:
-            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        annotated_filename = image_folder_path + '../edges/' + image_filename
-        cv2.imwrite(annotated_filename, image)
-        logging.info("Saving face-annotated image as {0}".format(annotated_filename))
-
-        # Extract face if image contains only 1 face
-        if len(faces) == 1:
-            for (x, y, w, h) in faces:
-                face_grayscale = gray[y:y+h, x:x+w]
-                face_grayscale_resized = cv2.resize(face_grayscale, FACE_SIZE)
-                face_filename = image_folder_path + '../faces/' + image_filename
-                cv2.imwrite(face_filename, face_grayscale_resized)
-                logging.info("FOUND 1 FACE! Saving extracted grayscale face as {0}".format(face_filename))
-        elif len(faces) == 0:
-            logging.info("Found no faces. Not extracting any faces")
-        else:
-            logging.info("Found multiple faces. Not extracting any faces")
-
-        logging.info("Face extraction finished.\n")
 
 
 def initialize_logger():
