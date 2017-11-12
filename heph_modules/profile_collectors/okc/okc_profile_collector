@@ -1,1 +1,10 @@
 #!/usr/bin/env python3
+
+
+# class OkcProfileCollector:
+    # """
+    # TODO - Create more strict contract for collect_profile(blacklist=None) implementation
+    # """
+    # @staticmethod
+    # def collect_profile(blacklist=None):
+    #

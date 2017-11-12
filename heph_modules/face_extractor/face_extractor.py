@@ -5,19 +5,15 @@ import logging
 import os
 
 # Parameters
-CASCADE_PATH = os.path.abspath("heph_modules/face_extractor/haarcascade_frontalface_default.xml")
+CASCADE_PATH = os.path.abspath('heph_modules/face_extractor/haarcascade_frontalface_default.xml')
 FACE_SIZE = (100, 100)
 RESIZE_TOP_PIXELS = 300
-
-# Logging
-LOG_NAME = 'face_extractor.log'
-LOG_FORMAT = '[FACE_EXTRACTOR_SERVER] %(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 
 class FaceExtractor:
     @staticmethod
     def extract_face(image_folder_path, image_filename):
-        logging.info("Processing [{1}] @ {0}".format(image_folder_path, image_filename))
+        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
 
         # Create the Haar cascade
         face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
@@ -35,14 +31,14 @@ class FaceExtractor:
             minNeighbors=20,
             minSize=(30, 30),
         )
-        logging.info("Faces found: {0}.".format(len(faces)))
+        logging.info('[Extractor] Faces found: {0}.'.format(len(faces)))
 
         # Draw a rectangle around the faces
         for (x, y, w, h) in faces:
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
         annotated_filename = image_folder_path + '../edges/' + image_filename
         cv2.imwrite(annotated_filename, image)
-        logging.info("Saving face-annotated image as {0}".format(annotated_filename))
+        logging.info('[Extractor] Saving face-annotated image as {0}'.format(annotated_filename))
 
         # Extract face if image contains only 1 face
         if len(faces) == 1:
@@ -51,10 +47,10 @@ class FaceExtractor:
                 face_grayscale_resized = cv2.resize(face_grayscale, FACE_SIZE)
                 face_filename = image_folder_path + '../faces/' + image_filename
                 cv2.imwrite(face_filename, face_grayscale_resized)
-                logging.info("FOUND 1 FACE! Saving extracted grayscale face as {0}".format(face_filename))
+                logging.info('[Extractor] FOUND 1 FACE! Saving extracted grayscale face as {0}'.format(face_filename))
         elif len(faces) == 0:
-            logging.info("Found no faces. Not extracting any faces")
+            logging.info('[Extractor] Found no faces. Not extracting any faces')
         else:
-            logging.info("Found multiple faces. Not extracting any faces")
+            logging.info('[Extractor] Found multiple faces. Not extracting any faces')
 
-        logging.info("Face extraction finished.\n")
+        logging.info('[Extractor] Face extraction finished.\n')

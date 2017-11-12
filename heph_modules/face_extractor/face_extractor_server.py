@@ -18,7 +18,7 @@ RESULT_EXTENSION = ".jpg"
 
 # Logging
 LOG_NAME = 'face_extractor.log'
-LOG_FORMAT = '[FACE_EXTRACTOR_SERVER] %(asctime)s - %(name)s - %(levelname)s - %(message)s'
+LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 
 class FaceExtractorServer(socketserver.BaseRequestHandler):
@@ -39,7 +39,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     def handle(self):
         self.data = self.request.recv(1024).strip()
         json_data = json.loads(self.data.decode())
-        logging.info('Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
+        logging.info('[Server] Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
         profile_rawtext = ProfileRawtext(**json_data)
         FaceExtractorServer.process_extraction_request(profile_rawtext)
 
@@ -60,13 +60,15 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
             image_folder_path, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
             FaceExtractor.extract_face(image_folder_path, image_filename)
 
+        logging.info('[Server] Request complete!\n\n')
+
     @staticmethod
     def save_image(platform, handle, image_link, index):
         open(RESULT_FOLDER + 'ids/' + platform + '-' + handle + '.id', 'a').close()
         image_filename = platform + '-' + handle + '-' + str(index+1) + RESULT_EXTENSION
         image_folder_path = RESULT_FOLDER + 'originals/'
         urlretrieve(image_link, image_folder_path + image_filename)
-        logging.info("Image has been successfully downloaded and saved as {0}".format(image_folder_path))
+        logging.info('[Server] Image has been successfully downloaded and saved as {0}'.format(image_folder_path))
         return image_folder_path, image_filename
 
     @staticmethod
@@ -93,25 +95,25 @@ def initialize_logger():
     root_logger.addHandler(stdout_handler)
     root_logger.addHandler(file_handler)
 
-    logging.info("Loggers successfully initialized.")
+    logging.info('[Server] Loggers successfully initialized.')
 
 
 if __name__ == '__main__':
     serving_host, serving_port = sys.argv[1], int(sys.argv[2])
     initialize_logger()
 
-    logging.info("\n"
-                 "\n-----------------------------------"
-                 "\nFace Extraction Server online!"
-                 "\nServing requests @ {}:{}"
-                 "\n-----------------------------------"
-                 "\n".format(serving_host, serving_port))
+    logging.info('[Server] \n'
+                 '\n-----------------------------------'
+                 '\nFace Extraction Server online!'
+                 '\nServing requests @ {}:{}'
+                 '\n-----------------------------------'
+                 '\n'.format(serving_host, serving_port))
 
     server = socketserver.TCPServer((serving_host, serving_port), FaceExtractorServer)
     server.request_queue_size = 5
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        logging.info('Shutting down server...')
+        logging.info('[Server] Shutting down server...')
         server.shutdown()
-        logging.info('Done!\n')
+        logging.info('[Server] Done!\n')
