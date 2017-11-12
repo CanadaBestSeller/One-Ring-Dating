@@ -11,3 +11,6 @@ class ProfileRawtext(dict):
         dict.__init__(self, platform=platform)
         dict.__init__(self, handle=handle)
         dict.__init__(self, image_links=image_links)
+
+    def __repr__(self):
+        return '<ProfileRawtext: {0} @ {1}. len(image_links)={2}>'.format(self['handle'], self['platform'], len(self['image_links']))

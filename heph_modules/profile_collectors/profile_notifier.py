@@ -1,16 +1,28 @@
 import logging
+import json
+import socket
 import sys
 import time
 
+from heph_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
+
 # Logging
-LOG_NAME = 'profile_collection.log'
+LOG_NAME = 'heph_modules/profile_collectors/profile_collection.log'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 
 class ProfileNotifier:
-    @staticmethod
-    def notify():
-        logging.info('[Notifier] This is a MOCK NOTIFICATION!')
+    def __init__(self, destination_hostname, destination_port, notification_frequency):
+        self.destination_hostname = destination_hostname
+        self.destination_port = destination_port
+        self.notification_frequency = notification_frequency
+
+    def notify(self):
+        profile_rawtext = OkcProfileCollector.collect_profile()  # TODO remove OKC and generify this line via an attachment pattern
+        logging.info('[Notifier] Profile Collected! {0}'.format(profile_rawtext))
+        destination = socket.socket()
+        destination.connect((self.destination_hostname, int(self.destination_port)))
+        destination.send(json.dumps(profile_rawtext).encode())
 
 
 def initialize_logger():
@@ -34,6 +46,8 @@ def initialize_logger():
 
 
 if __name__ == '__main__':
+    destination_hostname, destination_port, notification_frequency = sys.argv[1], sys.argv[2], int(sys.argv[3])
+
     initialize_logger()
 
     logging.info('\n'
@@ -43,8 +57,9 @@ if __name__ == '__main__':
                  '\n')
     try:
         while True:
-            ProfileNotifier.notify()
-            time.sleep(1)
+            profile_notifier = ProfileNotifier(destination_hostname, destination_port, notification_frequency)
+            profile_notifier.notify()
+            time.sleep(notification_frequency)
     except KeyboardInterrupt:
         logging.info('[Notifier] Shutting down notifier...')
         logging.info('[Notifier] Done!\n')

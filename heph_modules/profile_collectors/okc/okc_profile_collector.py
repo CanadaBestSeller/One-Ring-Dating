@@ -21,3 +21,6 @@ class OkcProfileCollector:
         profile = ProfileRawtext('okc', 'alison-brie', image_links)
         logging.info('[OKC Profile Collector] Collected profile via QuickMatch')
         return profile
+    #
+    # @staticmethod
+    # def quickmatch():
