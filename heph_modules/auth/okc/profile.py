@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import logging
-from utils import cached_property
+
+from heph_modules.auth.okc.utils import cached_property
 
 
 class Profile(object):

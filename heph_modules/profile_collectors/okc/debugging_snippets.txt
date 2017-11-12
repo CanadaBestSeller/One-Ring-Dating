@@ -1,9 +1,15 @@
 # EVERYTHING MUST BE RUN FROM THE ROOT DIRECTORY!!!
 
 # From the root package, issue "python3 setup.up install"
-
 # From the root package, issue the following:
+okc
 export PYTHONPATH=$PYTHONPATH:$PWD/heph_modules
+
+# Profile Notifier TESTS:
 python3 heph_modules/face_extractor/face_extractor_server.py localhost 7000
 python3 heph_modules/profile_collectors/profile_notifier.py localhost 7000 100
 
+# OKC Profile Collector TESTS
+from heph_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
+opc = OkcProfileCollector()
+opc.quickmatch()

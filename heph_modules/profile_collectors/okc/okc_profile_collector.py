@@ -3,12 +3,16 @@
 import logging
 
 from heph_modules.models.profile_rawtext import ProfileRawtext
+from heph_modules.auth.okc.session import Session as OkcSession
 
 
 class OkcProfileCollector:
     """
     TODO - Create more strict contract for collect_profile(blacklist=None) implementation
     """
+    def __init__(self):
+        self.session = OkcSession.login()
+
     @staticmethod
     def collect_profile(blacklist=None):
         image_links = [
@@ -21,6 +25,7 @@ class OkcProfileCollector:
         profile = ProfileRawtext('okc', 'alison-brie', image_links)
         logging.info('[OKC Profile Collector] Collected profile via QuickMatch')
         return profile
-    #
-    # @staticmethod
-    # def quickmatch():
+
+    def quickmatch(self):
+        match = self.session.quickmatch()
+        return match.username
