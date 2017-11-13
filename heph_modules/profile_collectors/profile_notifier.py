@@ -18,11 +18,15 @@ class ProfileNotifier:
         self.notification_frequency = notification_frequency
 
     def notify(self):
-        profile_rawtext = OkcProfileCollector.collect_profile()  # TODO remove OKC and generify this line via an attachment pattern
+        okc_profile_collector = OkcProfileCollector()
+        profile_rawtext = okc_profile_collector.collect_profile()  # TODO remove OKC and generify this line via an attachment pattern
         logging.info('[Notifier] Profile Collected! {0}'.format(profile_rawtext))
-        destination = socket.socket()
-        destination.connect((self.destination_hostname, int(self.destination_port)))
-        destination.send(json.dumps(profile_rawtext).encode())
+        try:
+            destination = socket.socket()
+            destination.connect((self.destination_hostname, int(self.destination_port)))
+            destination.send(json.dumps(profile_rawtext).encode())
+        except ConnectionRefusedError:
+            logging.error('[Notifier] Connection to {0}:{1} was refused!'.format(self.destination_hostname, self.destination_port))
 
 
 def initialize_logger():
