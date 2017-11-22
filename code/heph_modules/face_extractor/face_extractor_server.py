@@ -17,7 +17,7 @@ ESSENTIAL_FOLDERS = [RESULT_FOLDER + NAME for NAME in ['ids/', 'faces/', 'edges/
 RESULT_EXTENSION = ".jpg"
 
 # Logging
-LOG_NAME = 'phase_1_face_extraction.log'
+LOG_NAME = 'phase_0_face_extraction.log'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 

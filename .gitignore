@@ -20,3 +20,6 @@
 
 # Already-processed users, blocked users, etc.
 *.blacklist
+
+# Mock test files
+*.test

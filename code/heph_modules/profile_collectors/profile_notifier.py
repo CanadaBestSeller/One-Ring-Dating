@@ -7,20 +7,23 @@ import time
 from heph_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
 
 # Logging
-LOG_NAME = 'phase_1_collector.log'
+LOG_NAME = 'phase_0_collector.log'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 
 class ProfileNotifier:
-    def __init__(self, destination_hostname, destination_port, notification_frequency, blacklist_folder_path):
+    def __init__(self, destination_hostname, destination_port, notification_frequency, blacklist_folder_path, test_filepath=None):
         self.destination_hostname = destination_hostname
         self.destination_port = destination_port
         self.notification_frequency = notification_frequency
         self.blacklist_folder_path = blacklist_folder_path
 
+        # Collector implementations
+        self.okc_profile_collector = OkcProfileCollector(test_filepath)
+
     def notify(self):
-        okc_profile_collector = OkcProfileCollector()
-        profile_rawtext = okc_profile_collector.collect_profile(blacklist_folder_path=blacklist_folder_path)  # TODO remove OKC and generify this line via an attachment pattern
+        # TODO remove OKC and generify this line via an attachment pattern
+        profile_rawtext = self.okc_profile_collector.collect_profile(blacklist_folder_path=blacklist_folder_path)
         logging.info('[Notifier] Profile Collected! {0}'.format(profile_rawtext))
         try:
             destination = socket.socket()
@@ -53,10 +56,11 @@ def initialize_logger():
 
 if __name__ == '__main__':
 
-    destination_hostname = sys.argv[1]
-    destination_port = sys.argv[2]
+    dest_hostname = sys.argv[1]
+    dest_port = sys.argv[2]
     notification_frequency = int(sys.argv[3])
     blacklist_folder_path = sys.argv[4]
+    test_filepath = sys.argv[5] if len(sys.argv) > 5 else None
 
     initialize_logger()
 
@@ -66,8 +70,8 @@ if __name__ == '__main__':
                  '\n----------------------------'
                  '\n')
     try:
+        profile_notifier = ProfileNotifier(dest_hostname, dest_port, notification_frequency, blacklist_folder_path, test_filepath)
         while True:
-            profile_notifier = ProfileNotifier(destination_hostname, destination_port, notification_frequency, blacklist_folder_path)
             profile_notifier.notify()
             time.sleep(notification_frequency)
     except KeyboardInterrupt:

@@ -7,7 +7,7 @@ HEPH_MESSENGER_FIRST_LINE="Hello!"
 HEPH_GLOBAL_SERVING_HOST=localhost
 
 HEPH_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL=5
-HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT=7000
+HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT=7001
 
 HEPH_PHASE_0_FACE_EXTRACTOR_SERVER_PORT=$HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT
 HEPH_PHASE_0_FACE_EXTRACTOR_OUTPUT_LOCATION="${PWD}/phase_1_pool"
@@ -38,11 +38,14 @@ python3 code/heph_modules/face_extractor/face_extractor_server.py \
     &
 HEPH_PHASE_0_FACE_EXTRACTOR_SERVER_PID=$!
 
+# We can optionally enter a file name as the last argument, to read from a pre-fetched list of usernames, instead of OKC's quickmatch
+# This is useful for load testing, 404 testing, and procuring training data for face selection models
 python3 code/heph_modules/profile_collectors/profile_notifier.py \
     ${HEPH_GLOBAL_SERVING_HOST} \
     ${HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT} \
     ${HEPH_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL} \
     ${PWD} \
+    messaged.test \
     &
 HEPH_PHASE_0_PROFILE_NOTIFIER_PID=$!
 
