@@ -1,4 +1,4 @@
-from heph_modules.auth.okc.utils import cached_property
+from heph_modules.utils import cached_property
 
 
 class XPathBuilder(object):

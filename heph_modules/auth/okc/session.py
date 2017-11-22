@@ -126,8 +126,10 @@ def build_okc_method(method_name):
     return okc_method
 
 
+# This code constructs the methods okc_get(), okc_put(), okc_post(), and okc_delete()
 for method_name in ('get', 'put', 'post', 'delete'):
     setattr(Session, 'okc_{0}'.format(method_name), build_okc_method(method_name))
 
 
-class AuthenticationError(Exception): pass
+class AuthenticationError(Exception):
+    pass

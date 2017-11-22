@@ -7,19 +7,20 @@ import time
 from heph_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
 
 # Logging
-LOG_NAME = 'heph_modules/profile_collectors/profile_collection.log'
+LOG_NAME = 'phase_1_collector.log'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 
 class ProfileNotifier:
-    def __init__(self, destination_hostname, destination_port, notification_frequency):
+    def __init__(self, destination_hostname, destination_port, notification_frequency, blacklist_folder_path):
         self.destination_hostname = destination_hostname
         self.destination_port = destination_port
         self.notification_frequency = notification_frequency
+        self.blacklist_folder_path = blacklist_folder_path
 
     def notify(self):
         okc_profile_collector = OkcProfileCollector()
-        profile_rawtext = okc_profile_collector.collect_profile()  # TODO remove OKC and generify this line via an attachment pattern
+        profile_rawtext = okc_profile_collector.collect_profile(blacklist_folder_path=blacklist_folder_path)  # TODO remove OKC and generify this line via an attachment pattern
         logging.info('[Notifier] Profile Collected! {0}'.format(profile_rawtext))
         try:
             destination = socket.socket()
@@ -50,7 +51,11 @@ def initialize_logger():
 
 
 if __name__ == '__main__':
-    destination_hostname, destination_port, notification_frequency = sys.argv[1], sys.argv[2], int(sys.argv[3])
+
+    destination_hostname = sys.argv[1]
+    destination_port = sys.argv[2]
+    notification_frequency = int(sys.argv[3])
+    blacklist_folder_path = sys.argv[4]
 
     initialize_logger()
 
@@ -61,7 +66,7 @@ if __name__ == '__main__':
                  '\n')
     try:
         while True:
-            profile_notifier = ProfileNotifier(destination_hostname, destination_port, notification_frequency)
+            profile_notifier = ProfileNotifier(destination_hostname, destination_port, notification_frequency, blacklist_folder_path)
             profile_notifier.notify()
             time.sleep(notification_frequency)
     except KeyboardInterrupt:

@@ -17,3 +17,6 @@
 *.svg
 *.ico
 *.webp
+
+# Already-processed users, blocked users, etc.
+*.blacklist
