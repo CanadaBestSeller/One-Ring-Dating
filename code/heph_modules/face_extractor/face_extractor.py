@@ -5,7 +5,7 @@ import logging
 import os
 
 # Parameters
-CASCADE_PATH = os.path.abspath('heph_modules/face_extractor/haarcascade_frontalface_default.xml')
+CASCADE_PATH = os.path.abspath('code/heph_modules/face_extractor/haarcascade_frontalface_default.xml')
 FACE_SIZE = (100, 100)
 RESIZE_TOP_PIXELS = 300
 
@@ -14,6 +14,17 @@ class FaceExtractor:
     @staticmethod
     def extract_face(image_folder_path, image_filename):
         logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+
+        logging.info('[ABSOLUTE PATH] {0}'.format(CASCADE_PATH))
+
+        with open(CASCADE_PATH) as file:
+            logging.info(file.read())
 
         # Create the Haar cascade
         face_cascade = cv2.CascadeClassifier(CASCADE_PATH)

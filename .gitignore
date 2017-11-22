@@ -5,7 +5,7 @@
 *.iml
 *.egg-info
 *dist/
-*build
+*build/
 *.log
 *.id
 
