@@ -39,7 +39,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     def handle(self):
         self.data = self.request.recv(1024).strip()
         json_data = json.loads(self.data.decode())
-        logging.info('[Server] Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
+        logging.debug('[Server] Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
         profile_rawtext = ProfileRawtext(**json_data)
         FaceExtractorServer.process_extraction_request(profile_rawtext)
 
@@ -52,7 +52,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     @staticmethod
     def process_extraction_request(profile_rawtext):
 
-        logging.info('[Server] Processing request...\n')
+        logging.debug('[Server] Processing request...\n')
 
         FaceExtractorServer.ensure_face_folders_exist()
         platform = profile_rawtext['platform']
@@ -63,7 +63,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
             image_folder_path, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
             FaceExtractor.extract_face(image_folder_path, image_filename)
 
-        logging.info('[Server] Request complete!\n\n')
+        logging.debug('[Server] Request complete!\n\n')
 
     @staticmethod
     def save_image(platform, handle, image_link, index):
@@ -71,7 +71,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
         image_filename = platform + '-' + handle + '-' + str(index+1) + RESULT_EXTENSION
         image_folder_path = RESULT_FOLDER + 'originals/'
         urlretrieve(image_link, image_folder_path + image_filename)
-        logging.info('[Server] Image has been successfully downloaded and saved as {0}'.format(image_folder_path))
+        logging.debug('[Server] Image has been successfully downloaded and saved as {0}'.format(image_folder_path))
         return image_folder_path, image_filename
 
     @staticmethod
@@ -98,14 +98,14 @@ def initialize_logger():
     root_logger.addHandler(stdout_handler)
     root_logger.addHandler(file_handler)
 
-    logging.info('[Server] Loggers successfully initialized.')
+    logging.debug('[Server] Loggers successfully initialized.')
 
 
 if __name__ == '__main__':
     serving_host, serving_port = sys.argv[1], int(sys.argv[2])
     initialize_logger()
 
-    logging.info('\n'
+    logging.debug('\n'
                  '\n-----------------------------------'
                  '\nFace Extraction Server online!'
                  '\nServing requests @ {}:{}'
@@ -117,6 +117,6 @@ if __name__ == '__main__':
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        logging.info('[Server] Shutting down server...')
+        logging.debug('[Server] Shutting down server...')
         server.shutdown()
-        logging.info('[Server] Done!\n')
+        logging.debug('[Server] Done!\n')

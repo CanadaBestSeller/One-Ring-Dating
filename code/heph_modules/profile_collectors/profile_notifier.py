@@ -24,7 +24,7 @@ class ProfileNotifier:
     def notify(self):
         # TODO remove OKC and generify this line via an attachment pattern
         profile_rawtext = self.okc_profile_collector.collect_profile(blacklist_folder_path=blacklist_folder_path)
-        logging.info('[Notifier] Profile Collected! {0}'.format(profile_rawtext))
+        logging.debug('[Notifier] Profile Collected! {0}'.format(profile_rawtext))
         try:
             destination = socket.socket()
             destination.connect((self.destination_hostname, int(self.destination_port)))
@@ -51,7 +51,7 @@ def initialize_logger():
     root_logger.addHandler(stdout_handler)
     root_logger.addHandler(file_handler)
 
-    logging.info('[Notifier] Loggers successfully initialized.')
+    logging.debug('[Notifier] Loggers successfully initialized.')
 
 
 if __name__ == '__main__':
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     initialize_logger()
 
-    logging.info('\n'
+    logging.debug('\n'
                  '\n----------------------------'
                  '\nProfile Notifier is running!'
                  '\n----------------------------'
@@ -75,5 +75,5 @@ if __name__ == '__main__':
             profile_notifier.notify()
             time.sleep(notification_frequency)
     except KeyboardInterrupt:
-        logging.info('[Notifier] Shutting down notifier...')
-        logging.info('[Notifier] Done!\n')
+        logging.debug('[Notifier] Shutting down notifier...')
+        logging.debug('[Notifier] Done!\n')

@@ -55,7 +55,7 @@ class OkcProfileCollector:
 
     def mock_collect_handle(self):
         handle = random.choice(FileUtils.parse_lines(self.test_filepath))
-        logging.info('[OKC Profile Collector] MOCK quickmatch found! Handle = {0}'.format(handle))
+        logging.info('[OKC Profile Collector] MOCKING quickmatch. Mocked handle: {0}'.format(handle))
         return handle
 
     def get_okc_image_links(self, handle):
