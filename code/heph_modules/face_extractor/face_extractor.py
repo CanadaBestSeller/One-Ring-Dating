@@ -13,7 +13,7 @@ RESIZE_TOP_PIXELS = 300
 class FaceExtractor:
     @staticmethod
     def extract_face(image_folder_path, image_filename):
-        logging.debug('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
+        logging.debug('[Face Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
 
         # Create the Haar cascade
         face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
@@ -31,14 +31,14 @@ class FaceExtractor:
             minNeighbors=20,
             minSize=(30, 30),
         )
-        logging.debug('[Extractor] Faces found: {0}.'.format(len(faces)))
+        logging.debug('[Face Extractor] Faces found: {0}.'.format(len(faces)))
 
         # Draw a rectangle around the faces
         for (x, y, w, h) in faces:
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
         annotated_filename = image_folder_path + '../edges/' + image_filename
         cv2.imwrite(annotated_filename, image)
-        logging.debug('[Extractor] Saving face-annotated image as {0}'.format(annotated_filename))
+        logging.debug('[Face Extractor] Saving face-annotated image as {0}'.format(annotated_filename))
 
         # Extract face if image contains only 1 face
         if len(faces) == 1:
@@ -47,10 +47,10 @@ class FaceExtractor:
                 face_grayscale_resized = cv2.resize(face_grayscale, FACE_SIZE)
                 face_filename = image_folder_path + '../faces/' + image_filename
                 cv2.imwrite(face_filename, face_grayscale_resized)
-                logging.info('[Extractor] FOUND 1 FACE! Saving extracted grayscale face as {0}'.format(face_filename))
+                logging.info('[Face Extractor] FOUND 1 FACE! Saving extracted grayscale face as {0}'.format(face_filename))
         elif len(faces) == 0:
-            logging.debug('[Extractor] Found no faces. Not extracting any faces')
+            logging.debug('[Face Extractor] Found no faces. Not extracting any faces')
         else:
-            logging.debug('[Extractor] Found multiple faces. Not extracting any faces')
+            logging.debug('[Face Extractor] Found multiple faces. Not extracting any faces')
 
-        logging.debug('[Extractor] Face extraction finished.\n')
+        logging.debug('[Face Extractor] Face extraction finished.\n')

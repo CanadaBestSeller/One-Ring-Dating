@@ -39,7 +39,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     def handle(self):
         self.data = self.request.recv(1024).strip()
         json_data = json.loads(self.data.decode())
-        logging.debug('[Server] Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
+        logging.debug('[Face Extractor Server] Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
         profile_rawtext = ProfileRawtext(**json_data)
         FaceExtractorServer.process_extraction_request(profile_rawtext)
 
@@ -52,7 +52,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     @staticmethod
     def process_extraction_request(profile_rawtext):
 
-        logging.debug('[Server] Processing request...\n')
+        logging.debug('[Face Extractor Server] Processing request...\n')
 
         FaceExtractorServer.ensure_face_folders_exist()
         platform = profile_rawtext['platform']
@@ -63,7 +63,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
             image_folder_path, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
             FaceExtractor.extract_face(image_folder_path, image_filename)
 
-        logging.debug('[Server] Request complete!\n\n')
+        logging.debug('[Face Extractor Server] Request complete!\n\n')
 
     @staticmethod
     def save_image(platform, handle, image_link, index):
@@ -71,7 +71,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
         image_filename = platform + '-' + handle + '-' + str(index+1) + RESULT_EXTENSION
         image_folder_path = RESULT_FOLDER + 'originals/'
         urlretrieve(image_link, image_folder_path + image_filename)
-        logging.debug('[Server] Image has been successfully downloaded and saved as {0}'.format(image_folder_path))
+        logging.debug('[Face Extractor Server] Image has been successfully downloaded and saved as {0}'.format(image_folder_path))
         return image_folder_path, image_filename
 
     @staticmethod
@@ -98,7 +98,7 @@ def initialize_logger():
     root_logger.addHandler(stdout_handler)
     root_logger.addHandler(file_handler)
 
-    logging.debug('[Server] Loggers successfully initialized.')
+    logging.debug('[Face Extractor Server] Loggers successfully initialized.')
 
 
 if __name__ == '__main__':
@@ -117,6 +117,6 @@ if __name__ == '__main__':
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        logging.debug('[Server] Shutting down server...')
+        logging.debug('[Face Extractor Server] Shutting down server...')
         server.shutdown()
-        logging.debug('[Server] Done!\n')
+        logging.debug('[Face Extractor Server] Done!\n')
