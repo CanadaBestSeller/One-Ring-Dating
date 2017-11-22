@@ -23,6 +23,12 @@ HEPH_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION="${PWD}/phase_3_matches"
 HEPH_PHASE_3_MESSENGER_INPUT_LOCATION=$HEPH_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION
 HEPH_PHASE_3_MESSENGER_EXECUTION_INTERVAL=5
 
+# Prompt OKC username if not already set
+if [ -z ${OKC_USERNAME+x} ]; then echo "Please enter your OkCupid username/email:"; read OKC_USERNAME; export OKC_USERNAME; else echo "OKC username is set."; fi
+
+# Prompt OKC password if not already set
+if [ -z ${OKC_PASSWORD+x} ]; then echo "Please enter your OkCupid password:"; read -s OKC_PASSWORD; export OKC_PASSWORD; else echo "OKC password is set."; fi
+
 # This is needed to install the compiled binaries at the root code folder
 cd code
 python3 setup.py install
