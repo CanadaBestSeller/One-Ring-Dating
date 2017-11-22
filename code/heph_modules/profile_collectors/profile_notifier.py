@@ -26,6 +26,7 @@ class ProfileNotifier:
             destination = socket.socket()
             destination.connect((self.destination_hostname, int(self.destination_port)))
             destination.send(json.dumps(profile_rawtext).encode())
+            destination.close()
         except ConnectionRefusedError:
             logging.error('[Notifier] Connection to {0}:{1} was refused!'.format(self.destination_hostname, self.destination_port))
 

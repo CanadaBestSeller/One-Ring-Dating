@@ -14,17 +14,6 @@ class FaceExtractor:
     @staticmethod
     def extract_face(image_folder_path, image_filename):
         logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
-        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
-        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
-        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
-        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
-        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
-        logging.info('[Extractor] Processing [{1}] @ {0}'.format(image_folder_path, image_filename))
-
-        logging.info('[ABSOLUTE PATH] {0}'.format(CASCADE_PATH))
-
-        with open(CASCADE_PATH) as file:
-            logging.info(file.read())
 
         # Create the Haar cascade
         face_cascade = cv2.CascadeClassifier(CASCADE_PATH)

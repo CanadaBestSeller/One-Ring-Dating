@@ -2,6 +2,7 @@
 
 import logging
 import re
+import time
 
 from heph_modules.models.profile_rawtext import ProfileRawtext
 from heph_modules.auth.okc.session import Session as OkcSession
@@ -18,8 +19,8 @@ class OkcProfileCollector:
     def __init__(self):
         self.session = OkcSession.login()
 
-    # TODO wrap method around retry upon AuthenticationError
     def collect_profile(self, blacklist_folder_path):
+        time.sleep(1)
         blacklist_filepath = blacklist_folder_path + '/phase_1_collector_okc.blacklist'
         try:
             match_handle = self.quickmatch()
@@ -27,14 +28,14 @@ class OkcProfileCollector:
 
             if match_handle in Blacklist.parse_lines(blacklist_filepath):
                 logging.warn('[OKC Profile Collector] Quickmatch is in blacklist! Skipping user "{0}"'.format(match_handle))
-                return
+                return self.collect_profile(blacklist_folder_path)
 
             image_links = self.get_okc_image_links(match_handle)
             Blacklist.add_line_to_file(blacklist_filepath, match_handle)
             return ProfileRawtext('okc', match_handle, image_links)  # TODO extract platform tag
         except AuthenticationError:
             self.session = OkcSession.login()
-            pass
+            return self.collect_profile(blacklist_folder_path)
 
     def quickmatch(self):
         match = self.session.quickmatch()

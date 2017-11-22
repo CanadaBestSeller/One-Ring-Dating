@@ -23,8 +23,13 @@ HEPH_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION="${PWD}/phase_3_matches"
 HEPH_PHASE_3_MESSENGER_INPUT_LOCATION=$HEPH_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION
 HEPH_PHASE_3_MESSENGER_EXECUTION_INTERVAL=5
 
+# This is needed to install the compiled binaries at the root code folder
+cd code
+python3 setup.py install
+cd ..
+
 # Enable global absolute-path imports
-export PYTHONPATH=$PYTHONPATH:$PWD/heph_modules
+export PYTHONPATH=$PYTHONPATH:$PWD/code/heph_modules
 
 # We are starting the applications in a descending order to avoid connection refusal.
 python3 code/heph_modules/face_extractor/face_extractor_server.py \
