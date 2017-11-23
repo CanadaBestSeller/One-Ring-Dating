@@ -2,23 +2,23 @@
 
 import json
 import logging
-import os
 import socketserver
 import sys
-
 from urllib.request import urlretrieve
 
-from heph_modules.face_extractor.face_extractor import FaceExtractor
+from heph_modules.face_extractor.extractors.haar_face_extractor import HaarFaceExtractor
+from heph_modules.face_extractor.extractors.landmark_face_extractor import LandmarkFaceExtractor
 from heph_modules.models.profile_rawtext import ProfileRawtext
+from heph_modules.utils.file_utils import FileUtils
 
 # Configs
-RESULT_FOLDER = "phase_1_pool/"
-ESSENTIAL_FOLDERS = [RESULT_FOLDER + NAME for NAME in ['ids/', 'faces/', 'edges/', 'originals/']]
+ROOT_IMAGE_FOLDER = "phase_1_pool/"
 RESULT_EXTENSION = ".jpg"
 
 # Logging
-LOG_NAME = 'phase_0_face_extraction.log'
+LOG_NAME = 'phase_0_face_extractor.log'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+LOG_TAG = '[Face Extractor Server] '
 
 
 class FaceExtractorServer(socketserver.BaseRequestHandler):
@@ -39,7 +39,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     def handle(self):
         self.data = self.request.recv(1024).strip()
         json_data = json.loads(self.data.decode())
-        logging.debug('[Face Extractor Server] Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
+        logging.debug(LOG_TAG + 'Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
         profile_rawtext = ProfileRawtext(**json_data)
         FaceExtractorServer.process_extraction_request(profile_rawtext)
 
@@ -51,34 +51,33 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
 
     @staticmethod
     def process_extraction_request(profile_rawtext):
-
-        logging.debug('[Face Extractor Server] Processing request...\n')
-
-        FaceExtractorServer.ensure_face_folders_exist()
+        logging.debug(LOG_TAG + 'Processing request...\n')
         platform = profile_rawtext['platform']
         handle = profile_rawtext['handle']
         image_links = profile_rawtext['image_links']
+        FileUtils.create_folder_if_not_exists(ROOT_IMAGE_FOLDER)
 
         for index, image_link in enumerate(image_links):
-            image_folder_path, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
-            FaceExtractor.extract_face(image_folder_path, image_filename)
+            image_filepath, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
+            HaarFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "haar_", image_filename)
+            LandmarkFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "landmark_", image_filename)
 
         logging.debug('[Face Extractor Server] Request complete!\n\n')
 
     @staticmethod
     def save_image(platform, handle, image_link, index):
-        open(RESULT_FOLDER + 'ids/' + platform + '-' + handle + '.id', 'a').close()
-        image_filename = platform + '-' + handle + '-' + str(index+1) + RESULT_EXTENSION
-        image_folder_path = RESULT_FOLDER + 'originals/'
-        urlretrieve(image_link, image_folder_path + image_filename)
-        logging.debug('[Face Extractor Server] Image has been successfully downloaded and saved as {0}'.format(image_folder_path))
-        return image_folder_path, image_filename
+        id_folder = ROOT_IMAGE_FOLDER + 'ids/'
+        FileUtils.create_folder_if_not_exists(id_folder)
+        open(id_folder + platform + '-' + handle + '.id', 'a').close()
 
-    @staticmethod
-    def ensure_face_folders_exist():
-        for folder_path in ESSENTIAL_FOLDERS:
-            if not os.path.exists(folder_path):
-                os.makedirs(folder_path)
+        image_filename = platform + '-' + handle + '-' + str(index+1) + RESULT_EXTENSION
+
+        originals_folder = ROOT_IMAGE_FOLDER + 'originals/'
+        FileUtils.create_folder_if_not_exists(originals_folder)
+        image_filepath = originals_folder + image_filename
+        urlretrieve(image_link, image_filepath)
+        logging.debug(LOG_TAG + 'Image has been successfully downloaded and saved as {0}'.format(image_filepath))
+        return image_filepath, image_filename
 
 
 def initialize_logger():
@@ -98,25 +97,27 @@ def initialize_logger():
     root_logger.addHandler(stdout_handler)
     root_logger.addHandler(file_handler)
 
-    logging.debug('[Face Extractor Server] Loggers successfully initialized.')
+    logging.debug(LOG_TAG + 'Loggers successfully initialized.')
 
 
 if __name__ == '__main__':
-    serving_host, serving_port = sys.argv[1], int(sys.argv[2])
+    serving_host = sys.argv[1]
+    serving_port = int(sys.argv[2])
+
     initialize_logger()
 
     logging.debug('\n'
-                 '\n-----------------------------------'
-                 '\nFace Extraction Server online!'
-                 '\nServing requests @ {}:{}'
-                 '\n-----------------------------------'
-                 '\n'.format(serving_host, serving_port))
+                  '\n-----------------------------------'
+                  '\nFace Extractor Server online!'
+                  '\nServing requests @ {}:{}'
+                  '\n-----------------------------------'
+                  '\n'.format(serving_host, serving_port))
 
     server = socketserver.TCPServer((serving_host, serving_port), FaceExtractorServer)
     server.request_queue_size = 5
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        logging.debug('[Face Extractor Server] Shutting down server...')
+        logging.debug(LOG_TAG + 'Shutting down server...')
         server.shutdown()
-        logging.debug('[Face Extractor Server] Done!\n')
+        logging.debug(LOG_TAG + 'Done!\n')

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from os.path import exists
+from os import makedirs
 
 
 class FileUtils:
@@ -18,3 +19,8 @@ class FileUtils:
         with open(filepath, 'a+') as file:
             file.write(entry)
             file.write('\r\n')
+
+    @staticmethod
+    def create_folder_if_not_exists(folder_path):
+        if not exists(folder_path):
+            makedirs(folder_path)
