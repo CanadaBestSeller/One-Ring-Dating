@@ -6,10 +6,10 @@ import socketserver
 import sys
 from urllib.request import urlretrieve
 
-from heph_modules.face_extractor.extractors.haar_face_extractor import HaarFaceExtractor
-from heph_modules.face_extractor.extractors.landmark_face_extractor import LandmarkFaceExtractor
-from heph_modules.models.profile_rawtext import ProfileRawtext
-from heph_modules.utils.file_utils import FileUtils
+from one_ring_modules.face_extractor.extractors.haar_face_extractor import HaarFaceExtractor
+from one_ring_modules.face_extractor.extractors.landmark_face_extractor import LandmarkFaceExtractor
+from one_ring_modules.models.profile_rawtext import ProfileRawtext
+from one_ring_modules.utils.file_utils import FileUtils
 
 # Configs
 ROOT_IMAGE_FOLDER = "phase_1_pool/"
@@ -60,7 +60,7 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
         for index, image_link in enumerate(image_links):
             image_filepath, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
             HaarFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "haar_", image_filename)
-            LandmarkFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "landmark_", image_filename)
+            # LandmarkFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "landmark_", image_filename)
 
         logging.debug('[Face Extractor Server] Request complete!\n\n')
 

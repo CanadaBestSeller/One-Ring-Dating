@@ -23,3 +23,6 @@
 
 # Mock test files
 *.test
+
+# Virtual environment
+*one_ring_virtual_env*

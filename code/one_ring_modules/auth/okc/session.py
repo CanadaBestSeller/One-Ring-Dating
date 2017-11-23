@@ -7,7 +7,7 @@ import time
 
 import requests
 
-from heph_modules.auth.okc.profile import Profile
+from one_ring_modules.auth.okc.profile import Profile
 
 # Credentials (username & password)
 USERNAME = os.environ.get('OKC_USERNAME')

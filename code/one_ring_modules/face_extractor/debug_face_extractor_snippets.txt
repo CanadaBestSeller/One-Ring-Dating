@@ -5,15 +5,15 @@
 # From the root package, issue bash command
 
 # From the root package, issue:
-export PYTHONPATH=$PYTHONPATH:$PWD/code/heph_modules;./clean.sh;cd code;python3 setup.py install;cd ..;python3 code/heph_modules/face_extractor/face_extractor_server.py localhost 7000
+export PYTHONPATH=$PYTHONPATH:$PWD/code/one_ring_modules;./clean.sh;cd code;python3 setup.py install;cd ..;python3 code/one_ring_modules/face_extractor/face_extractor_server.py localhost 7000
 
 ---
 
-# From the root package, "hephaestus", open the Python interpreter
+# From the root package, "One-Ring-Dating", open the Python interpreter
 
 import json
 import socket
-from heph_modules.models.profile_rawtext import ProfileRawtext
+from one_ring_modules.models.profile_rawtext import ProfileRawtext
 
 face_extractor_endpoint = socket.socket()
 face_extractor_endpoint.connect(('localhost', int(7000)))

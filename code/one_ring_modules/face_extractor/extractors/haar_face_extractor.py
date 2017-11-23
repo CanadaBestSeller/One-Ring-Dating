@@ -4,10 +4,10 @@ import cv2
 import logging
 import os
 
-from heph_modules.utils.file_utils import FileUtils
+from one_ring_modules.utils.file_utils import FileUtils
 
 # Parameters
-CASCADE_PATH = os.path.abspath('code/heph_modules/face_extractor/haarcascade_frontalface_default.xml')
+CASCADE_PATH = os.path.abspath('code/one_ring_modules/face_extractor/haarcascade_frontalface_default.xml')
 FACE_SIZE = (100, 100)
 RESIZE_TOP_PIXELS = 300
 LOG_TAG = '[Haar Face Extractor] '

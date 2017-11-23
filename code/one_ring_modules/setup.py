@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 setup(
     name='one_ring_modules',
@@ -7,5 +7,5 @@ setup(
     author='David Li',
     author_email='david.d.li@gmail.com',
     url='https://www.linkedin.com/in/david-d-li',
-    packages=find_packages(),
+    packages=['one_ring_modules']
 )

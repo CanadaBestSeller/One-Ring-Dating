@@ -2,7 +2,7 @@
 
 import logging
 
-from heph_modules.utils import cached_property
+from one_ring_modules.utils import cached_property
 
 
 class Profile(object):

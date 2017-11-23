@@ -5,14 +5,14 @@ import random
 import re
 import time
 
-from heph_modules.models.profile_rawtext import ProfileRawtext
-from heph_modules.auth.okc.session import Session as OkcSession
-from heph_modules.auth.okc.session import AuthenticationError
+from one_ring_modules.models.profile_rawtext import ProfileRawtext
+from one_ring_modules.auth.okc.session import Session as OkcSession
+from one_ring_modules.auth.okc.session import AuthenticationError
 
 from requests.exceptions import HTTPError
 
-from heph_modules.utils.xpath import xpb
-from heph_modules.utils.file_utils import FileUtils
+from one_ring_modules.utils.xpath import xpb
+from one_ring_modules.utils.file_utils import FileUtils
 
 from lxml import html
 

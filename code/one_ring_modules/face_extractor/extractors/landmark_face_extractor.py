@@ -4,7 +4,7 @@ import cv2
 import logging
 import os
 
-from heph_modules.utils.file_utils import FileUtils
+from one_ring_modules.utils.file_utils import FileUtils
 
 # Parameters
 FACE_SIZE = (100, 100)
@@ -19,9 +19,6 @@ class LandmarkFaceExtractor:
 
         logging.debug(LOG_TAG + 'Processing image @ ' + input_image_filepath)
         logging.debug(LOG_TAG + 'Output folder @ ' + output_folder_path)
-
-        # Create the Haar cascade
-        face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
 
         # Read the image
         image = cv2.imread(input_image_filepath)

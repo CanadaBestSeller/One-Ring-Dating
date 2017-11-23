@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import inspect
-from heph_modules.utils.currying import curry
+from one_ring_modules.utils.currying import curry
 
 
 class cached_property(object):

@@ -4,7 +4,7 @@ import socket
 import sys
 import time
 
-from heph_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
+from one_ring_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
 
 # Logging
 LOG_NAME = 'phase_0_collector.log'
