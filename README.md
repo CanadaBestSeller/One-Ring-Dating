@@ -7,8 +7,6 @@ One dating app to rule them all.
 2. Create an alias to run python 3 with the keyword "python3"
 
 ## Windows Instructions
-1. Install python 3 somehow on windows, and make sure you can run "python" in command prompt from any directory:
-https://docs.python.org/3/using/windows.html
-
-2. Download Visual C++ Build Tools
-http://landinghub.visualstudio.com/visual-cpp-build-tools
+1. Install Python 3 for Windows: https://docs.python.org/3/using/windows.html
+2. Alias Python 3 as "python", and make sure you can run "python" in command prompt from any directory.
+3. Execute windows_run.bat
