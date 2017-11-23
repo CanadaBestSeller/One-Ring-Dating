@@ -1,6 +1,7 @@
 # One Ring Dating
 One dating app to rule them all.
 
+## Overview (instructions below)
 ![Alt text](/documentation/high-level-architecture.png?raw=true "High-level Architecture")
 
 ## MAC OS X Instructions
