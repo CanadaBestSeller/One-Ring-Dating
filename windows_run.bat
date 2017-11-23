@@ -1,32 +1,31 @@
 REM TO-DO
 REM 1. Get PID from START commands
-REM 2. Fix setup.py install for opencv in Windows (not able to find dist)
 REM 3. CTRL+C logic to kill aforementioned PIDs
 REM 4. If condition for inputting OKC if user does not have OKC
 REM 5. Update windows_readme.txt
 
 REM Creative Controls
-SET HEPH_MESSENGER_FIRST_LINE="Hello!"
+SET ONE_RING_MESSENGER_FIRST_LINE="Hello!"
 
 REM Application Controls. Best leave alone.
-SET HEPH_GLOBAL_SERVING_HOST=localhost
+SET ONE_RING_GLOBAL_SERVING_HOST=localhost
 
-SET HEPH_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL=5
-SET HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT=7000
+SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL=10
+SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT=7000
 
-SET HEPH_PHASE_0_FACE_EXTRACTOR_SERVER_PORT=%HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT%
-SET HEPH_PHASE_0_FACE_EXTRACTOR_OUTPUT_LOCATION=%cd%\phase_1_pool
+SET ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PORT=%ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT%
+SET ONE_RING_PHASE_0_FACE_EXTRACTOR_OUTPUT_LOCATION=%cd%\phase_1_pool
 
-SET HEPH_PHASE_1_FACE_SELECTOR_INPUT_LOCATION=%HEPH_PHASE_1_FACE_EXTRACTOR_OUTPUT_LOCATION%
-SET HEPH_PHASE_1_FACE_SELECTOR_POLLING_INTERVAL=5
-SET HEPH_PHASE_1_FACE_SELECTOR_OUTPUT_LOCATION=%cd%\phase_2_candidates
+SET ONE_RING_PHASE_1_FACE_SELECTOR_INPUT_LOCATION=%ONE_RING_PHASE_1_FACE_EXTRACTOR_OUTPUT_LOCATION%
+SET ONE_RING_PHASE_1_FACE_SELECTOR_POLLING_INTERVAL=5
+SET ONE_RING_PHASE_1_FACE_SELECTOR_OUTPUT_LOCATION=%cd%\phase_2_candidates
 
-SET HEPH_PHASE_2_POST_PROCESSOR_INPUT_LOCATION=%HEPH_PHASE_1_FACE_SELECTOR_OUTPUT_LOCATION%
-SET HEPH_PHASE_2_POST_PROCESSOR_EXECUTION_INTERVAL=5
-SET HEPH_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION=%cd%\phase_3_matches
+SET ONE_RING_PHASE_2_POST_PROCESSOR_INPUT_LOCATION=%ONE_RING_PHASE_1_FACE_SELECTOR_OUTPUT_LOCATION%
+SET ONE_RING_PHASE_2_POST_PROCESSOR_EXECUTION_INTERVAL=5
+SET ONE_RING_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION=%cd%\phase_3_matches
 
-SET HEPH_PHASE_3_MESSENGER_INPUT_LOCATION=%HEPH_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION%
-SET HEPH_PHASE_3_MESSENGER_EXECUTION_INTERVAL=5
+SET ONE_RING_PHASE_3_MESSENGER_INPUT_LOCATION=%ONE_RING_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION%
+SET ONE_RING_PHASE_3_MESSENGER_EXECUTION_INTERVAL=5
 
 cls
 @echo off
@@ -35,33 +34,35 @@ SET /p OKC_USERNAME="Enter your OkCupid username/email: "
 CALL:getPassword OKC_PASSWORD "Enter your OkCupid password (hidden): "
 
 REM This is needed to install the compiled binaries at the root code folder
-cd code
-python setup.py install
-cd ..
+python -m venv code\one_ring_virtual_env
 
-REM Enable global absolute-path imports
-SET PYTHONPATH=%PYTHONPATH%;%cd%\code\heph_modules
+REM Activate virtual environment
+code\one_ring_virtual_env\Scripts\activate.bat
+
+REM Install dependencies
+pip install -r code\one_ring_modules\requirements.txt
+
+REM Install one_ring_modules for global absolute imports
+pip install %cd%\code
 
 REM We are starting the applications in a descending order to avoid connection refusal.
 
 REM Start the Face Extractor Server in the background
 START /b cmd /c ^
-    python code/heph_modules/face_extractor/face_extractor_server.py ^
-    %HEPH_GLOBAL_SERVING_HOST% ^
-    %HEPH_PHASE_0_FACE_EXTRACTOR_SERVER_PORT%
-SET HEPH_PHASE_0_FACE_EXTRACTOR_SERVER_PID=$!
+    python code/one_ring_modules/face_extractor/face_extractor_server.py ^
+    %ONE_RING_GLOBAL_SERVING_HOST% ^
+    %ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PORT%
+REM SET ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PID=$!
 
 REM Start the Profile Collector/Notifier in the background
 REM We can optionally enter a file name as the last argument, to read from a pre-fetched list of usernames, instead of OKC's quickmatch
-REM This is useful for load testing, 404 testing, and procuring training data for face selection models
-START /b cmd /c ^
-    python3 code/heph_modules/profile_collectors/profile_notifier.py ^
-    %HEPH_GLOBAL_SERVING_HOST% ^
-    %HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
-    %HEPH_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL% ^
-    %cd% ^
-    okc.test
-SET HEPH_PHASE_0_PROFILE_NOTIFIER_PID=$!
+REM This is useful for load testing, 404 testing, and procuring training data for face selection models START /b cmd /c ^
+    python code\one_ring_modules\profile_collectors\profile_notifier.py ^
+    %ONE_RING_GLOBAL_SERVING_HOST% ^
+    %ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
+    %ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL% ^
+    %cd%
+REM SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_PID=$!
 
 
 
