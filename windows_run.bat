@@ -33,17 +33,37 @@ cls
 SET /p OKC_USERNAME="Enter your OkCupid username/email: "
 CALL:getPassword OKC_PASSWORD "Enter your OkCupid password (hidden): "
 
-REM This is needed to install the compiled binaries at the root code folder
+cls
+
+ECHO Creating virtual environment, please be patient...
 python -m venv code\one_ring_virtual_env
+ECHO Done!
+TIMEOUT 1 > nul
 
-REM Activate virtual environment
-code\one_ring_virtual_env\Scripts\activate.bat
+cls
 
-REM Install dependencies
+ECHO Activating virtual environment....
+call %cd%\code\one_ring_virtual_env\Scripts\activate.bat
+ECHO Done!
+TIMEOUT 1 > nul
+
+cls
+
+ECHO Almost there!
+ECHO Installing external dependencies...
+ECHO.
 pip install -r code\one_ring_modules\requirements.txt
+ECHO Done!
+TIMEOUT 1 > nul
 
-REM Install one_ring_modules for global absolute imports
+cls
+
+ECHO Installing application & enabling global absolute imports...
 pip install %cd%\code
+ECHO Done!
+TIMEOUT 1 > nul
+
+cls
 
 REM We are starting the applications in a descending order to avoid connection refusal.
 
@@ -64,7 +84,7 @@ REM This is useful for load testing, 404 testing, and procuring training data fo
     %cd%
 REM SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_PID=$!
 
-
+pause
 
 REM------------------------------------------------------------------------------
 REM Masks user input and returns the input as a variable.
