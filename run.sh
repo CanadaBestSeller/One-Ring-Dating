@@ -51,7 +51,7 @@ python3 code/heph_modules/profile_collectors/profile_notifier.py \
     ${HEPH_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT} \
     ${HEPH_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL} \
     ${PWD} \
-    messaged.test \
+    okc.test \
     &
 HEPH_PHASE_0_PROFILE_NOTIFIER_PID=$!
 
