@@ -16,11 +16,13 @@ from one_ring_modules.utils.file_utils import FileUtils
 
 from lxml import html
 
+LOG_TAG = '[OKC Profile Collector] '
+
 
 class OkcProfileCollector:
 
     def __init__(self, test_filepath=None):
-        logging.warn('[OKC Profile Collector] Logging in now. This should happen very rarely.')
+        logging.warning(LOG_TAG + 'Logging in now. This should happen very rarely.')
         self.session = OkcSession.login()
         self.test_filepath = test_filepath
 
@@ -30,20 +32,20 @@ class OkcProfileCollector:
 
         try:
             match_handle = self.collect_handle() if self.test_filepath is None else self.mock_collect_handle()
-            logging.info('[OKC Profile Collector] Quickmatch found! Handle = {0}'.format(match_handle))
+            logging.info(LOG_TAG + 'Quickmatch found! Handle = {0}'.format(match_handle))
         except AuthenticationError:
-            logging.warn('[OKC Profile Collector] Encountered authentication error. Attempting to re-log')
+            logging.warning(LOG_TAG + 'Encountered authentication error. Attempting to re-log')
             self.session = OkcSession.login()
             return self.collect_profile(blacklist_folder_path)
 
         if match_handle in FileUtils.parse_lines(blacklist_filepath):
-            logging.warn('[OKC Profile Collector] Quickmatch is in blacklist! Skipping user "{0}"'.format(match_handle))
+            logging.warning(LOG_TAG + 'Quickmatch is in blacklist! Skipping user "{0}"'.format(match_handle))
             return self.collect_profile(blacklist_folder_path)
 
         try:
             image_links = self.get_okc_image_links(match_handle)
         except HTTPError:
-            logging.warn('[OKC Profile Collector] Encountered HTTP error while collecting user ID {0}. Re-trying.'.format(match_handle))
+            logging.warning(LOG_TAG + 'Encountered HTTP error while collecting user ID {0}. Re-trying.'.format(match_handle))
             return self.collect_profile(blacklist_folder_path)
 
         FileUtils.add_line_to_file(blacklist_filepath, match_handle)
@@ -55,7 +57,7 @@ class OkcProfileCollector:
 
     def mock_collect_handle(self):
         handle = random.choice(FileUtils.parse_lines(self.test_filepath))
-        logging.info('[OKC Profile Collector] MOCKING quickmatch. Mocked handle: {0}'.format(handle))
+        logging.info(LOG_TAG + 'MOCKING quickmatch. Mocked handle: {0}'.format(handle))
         return handle
 
     def get_okc_image_links(self, handle):

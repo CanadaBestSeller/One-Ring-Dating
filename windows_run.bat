@@ -36,13 +36,15 @@ CALL:getPassword OKC_PASSWORD "Enter your OkCupid password (hidden): "
 
 cls
 
-ECHO Creating virtual environment, please be patient...
-FOR /D /R %%X IN ("code\one_ring_virtual_env") DO RD /S /Q "%%X"
-cls
+REM Create virtual environment if it does not exist already
+IF NOT EXIST code\one_ring_virtual_env\ (
 ECHO Creating virtual environment, please be patient...
 python -m venv code\one_ring_virtual_env
+cls
+ECHO Creating virtual environment, please be patient...
 ECHO Done!
 TIMEOUT 1 > nul
+) || goto :EOF
 
 cls
 
@@ -53,17 +55,23 @@ TIMEOUT 1 > nul
 
 cls
 
+REM Download dependencies, if they don't already exist. We determine that deps exists by checking 'requests'
+IF NOT EXIST code\one_ring_virtual_env\Lib\site-packages\requests\ (
 ECHO Almost there!
 ECHO Installing external dependencies...
 ECHO.
 pip install -r code\one_ring_modules\requirements.txt
 ECHO Done!
 TIMEOUT 1 > nul
+) || goto :EOF
 
 cls
 
+IF NOT EXIST code\one_ring_virtual_env\Lib\site-packages\one_ring_modules\ (
 ECHO Installing application & enabling global absolute imports...
-pip install %cd%\code
+pip install -e %cd%\code
+) || goto :EOF
+
 ECHO Done!
 TIMEOUT 1 > nul
 
@@ -81,6 +89,7 @@ REM SET ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PID=$!
 REM Start the Profile Collector/Notifier in the background
 REM We can optionally enter a file name as the last argument, to read from a pre-fetched list of usernames, instead of OKC's quickmatch
 REM This is useful for load testing, 404 testing, and procuring training data for face selection models START /b cmd /c ^
+START /b cmd /c ^
     python code\one_ring_modules\profile_collectors\profile_notifier.py ^
     %ONE_RING_GLOBAL_SERVING_HOST% ^
     %ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
