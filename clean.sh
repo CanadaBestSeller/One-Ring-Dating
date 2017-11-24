@@ -3,7 +3,7 @@
 rm *.log > /dev/null 2>&1
 rm *.blacklist > /dev/null 2>&1
 
-rm -r phase_1_pool > /dev/null 2>&1
+rm -r phase_1_faces > /dev/null 2>&1
 rm -r code/one_ring_virtual_env/python*/site-packages > /dev/null 2>&1
 
 

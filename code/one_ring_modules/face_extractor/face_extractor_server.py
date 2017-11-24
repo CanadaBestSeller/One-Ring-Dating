@@ -12,7 +12,7 @@ from one_ring_modules.models.profile_rawtext import ProfileRawtext
 from one_ring_modules.utils.file_utils import FileUtils
 
 # Configs
-ROOT_IMAGE_FOLDER = "phase_1_pool/"
+ROOT_IMAGE_FOLDER = "phase_1_faces/"
 RESULT_EXTENSION = ".jpg"
 
 # Logging

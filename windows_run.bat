@@ -1,5 +1,6 @@
 REM TO-DO
 REM 1. Get PID from START commands
+REM 2. Do not remove env, skip env creation if exists
 REM 3. CTRL+C logic to kill aforementioned PIDs
 REM 4. If condition for inputting OKC if user does not have OKC
 REM 5. Update windows_readme.txt
@@ -14,7 +15,7 @@ SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL=10
 SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT=7000
 
 SET ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PORT=%ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT%
-SET ONE_RING_PHASE_0_FACE_EXTRACTOR_OUTPUT_LOCATION=%cd%\phase_1_pool
+SET ONE_RING_PHASE_0_FACE_EXTRACTOR_OUTPUT_LOCATION=%cd%\phase_1_faces
 
 SET ONE_RING_PHASE_1_FACE_SELECTOR_INPUT_LOCATION=%ONE_RING_PHASE_1_FACE_EXTRACTOR_OUTPUT_LOCATION%
 SET ONE_RING_PHASE_1_FACE_SELECTOR_POLLING_INTERVAL=5
@@ -35,6 +36,9 @@ CALL:getPassword OKC_PASSWORD "Enter your OkCupid password (hidden): "
 
 cls
 
+ECHO Creating virtual environment, please be patient...
+FOR /D /R %%X IN ("code\one_ring_virtual_env") DO RD /S /Q "%%X"
+cls
 ECHO Creating virtual environment, please be patient...
 python -m venv code\one_ring_virtual_env
 ECHO Done!
