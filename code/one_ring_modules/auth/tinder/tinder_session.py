@@ -37,23 +37,24 @@ HEADERS_TEMPLATE = {
 }
 
 # Credentials (username & password)
-FB_EMAIL = os.environ.get('TINDER_USERNAME')
-FB_PASSWORD = os.environ.get('TINDER_PASSWORD')
+FB_EMAIL = os.environ.get('ONE_RING_FB_EMAIL')
+FB_PASSWORD = os.environ.get('ONE_RING_FB_PASSWORD')
 
-"""
-DEBUG AS FOLLOWS:
 
-cd C:\Users\PC147-GamingComp2\PycharmProjects\One-Ring-Dating
-code\one_ring_virtual_env\Scripts\activate.bat
-cd code\one_ring_modules\auth\tinder
-python
-from tinder_session import TinderSession
-t = TinderSession("<username>", "<password>")
-t.get_recommendations()
-quit()
-cls
-"""
 class TinderSession:  # TODO Use a factory pattern and limit output to only self.header
+    """
+    | DEBUG AS FOLLOWS:
+    |
+    | cd C:\Users\PC147-GamingComp2\PycharmProjects\One-Ring-Dating
+    | code\one_ring_virtual_env\Scripts\activate.bat
+    | cd code\one_ring_modules\auth\tinder
+    | python
+    | from tinder_session import TinderSession
+    | t = TinderSession("<username>", "<password>")
+    | t.get_recommendations()
+    | quit()
+    cls
+    """
 
     @classmethod
     def log_in(cls):

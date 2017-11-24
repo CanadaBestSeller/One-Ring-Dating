@@ -58,9 +58,14 @@ class OkcProfileCollector:
         return match.username
 
     def mock_collect_handle(self):
-        handle = random.choice(FileUtils.parse_lines(self.test_filepath))
-        logging.info(LOG_TAG + 'MOCKING quickmatch. Mocked handle: {0}'.format(handle))
-        return handle
+        mock_handles = FileUtils.parse_lines(self.test_filepath)
+        if len(mock_handles) is 0:
+            logging.error(LOG_TAG + 'Attempting to mock quickmatch but there is no mock input! Falling back to real collect')
+            return self.collect_handle()
+        else:
+            handle = random.choice(mock_handles)
+            logging.info(LOG_TAG + 'MOCKING quickmatch. Mocked handle: {0}'.format(handle))
+            return handle
 
     def get_okc_image_links(self, handle):
         pics_request = self.session.okc_get(

@@ -23,24 +23,55 @@ ONE_RING_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION="${PWD}/phase_3_matches"
 ONE_RING_PHASE_3_MESSENGER_INPUT_LOCATION=$ONE_RING_PHASE_2_POST_PROCESSOR_OUTPUT_LOCATION
 ONE_RING_PHASE_3_MESSENGER_EXECUTION_INTERVAL=5
 
-# Prompt OKC username if not already set
-if [ -z ${OKC_USERNAME+x} ]; then echo "Please enter your OkCupid username/email:"; read OKC_USERNAME; export OKC_USERNAME; else echo "OKC username is set."; fi
+if [ -z ${ONE_RING_OKC_USERNAME+x} ]; 
+    then echo "Please enter your OkCupid username/email:"; 
+    read ONE_RING_OKC_USERNAME; export ONE_RING_OKC_USERNAME; 
+else echo "OKC username is set."; fi
 
-# Prompt OKC password if not already set
-if [ -z ${OKC_PASSWORD+x} ]; then echo "Please enter your OkCupid password:"; read -s OKC_PASSWORD; export OKC_PASSWORD; else echo "OKC password is set."; fi
+if [ -z ${ONE_RING_OKC_PASSWORD+x} ]; 
+    then echo "Please enter your OkCupid password:"; 
+    read -s ONE_RING_OKC_PASSWORD; export ONE_RING_OKC_PASSWORD; 
+else echo "OKC password is set."; fi
 
-# Create virtual env
+if [ -z ${ONE_RING_FB_EMAIL+x} ]; 
+    then echo "Please enter your Facebook email:"; 
+    read ONE_RING_FB_EMAIL; export ONE_RING_FB_EMAIL; 
+else echo "FB email is set."; fi
+
+if [ -z ${ONE_RING_FB_PASSWORD+x} ]; 
+    then echo "Please enter your Facebook password:"; 
+    read -s ONE_RING_FB_PASSWORD; export ONE_RING_FB_PASSWORD; 
+else echo "FB password is set."; fi
+
+clear
+
+if [ ! -d "${PWD}/code/one_ring_virtual_env" ]; then
+echo "Creating virtual environment..."
 python3 -m venv ./code/one_ring_virtual_env
+echo "Done!"; echo ""
+fi
+
+echo "Activating virtual environment..."
 source ./code/one_ring_virtual_env/bin/activate
+echo "Done!"
 
-# Install necessary dependencies in virtual env
+clear
+
+if [ ! -d "${PWD}/code/one_ring_modules.egg-info" ]; then
+echo "Installing necessary external dependencies in virtual environment..."
 pip install -r code/one_ring_modules/requirements.txt
+echo "Done!"
+fi
 
-# Create global module in virtual env to enable absolute imports
-pip install ./code
+clear
 
-# Enable global absolute-path imports
-export PYTHONPATH=$PYTHONPATH:$PWD/code/one_ring_modules
+if [ ! -d "${PWD}/code/one_ring_modules.egg-info" ]; then
+echo "Creating global module symlinks in virtual env to enable absolute imports..."
+pip install -e ./code
+echo "Done!"
+fi
+
+clear
 
 # We are starting the applications in a descending order to avoid connection refusal.
 python3 code/one_ring_modules/face_extractor/face_extractor_server.py \

@@ -10,8 +10,8 @@ import requests
 from one_ring_modules.auth.okc.profile import Profile
 
 # Credentials (username & password)
-USERNAME = os.environ.get('OKC_USERNAME')
-PASSWORD = os.environ.get('OKC_PASSWORD')
+USERNAME = os.environ.get('ONE_RING_OKC_USERNAME')
+PASSWORD = os.environ.get('ONE_RING_OKC_PASSWORD')
 
 
 class Session(object):
