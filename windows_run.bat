@@ -67,7 +67,7 @@ TIMEOUT 1 > nul
 
 cls
 
-IF NOT EXIST code\one_ring_virtual_env\Lib\site-packages\one_ring_modules\ (
+IF NOT EXIST code\one_ring_modules.egg-info\ (
 ECHO Installing application & enabling global absolute imports...
 pip install -e %cd%\code
 ) || goto :EOF
@@ -89,12 +89,12 @@ REM SET ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PID=$!
 REM Start the Profile Collector/Notifier in the background
 REM We can optionally enter a file name as the last argument, to read from a pre-fetched list of usernames, instead of OKC's quickmatch
 REM This is useful for load testing, 404 testing, and procuring training data for face selection models START /b cmd /c ^
-START /b cmd /c ^
-    python code\one_ring_modules\profile_collectors\profile_notifier.py ^
-    %ONE_RING_GLOBAL_SERVING_HOST% ^
-    %ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
-    %ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL% ^
-    %cd%
+REM START /b cmd /c ^
+REM     python code\one_ring_modules\profile_collectors\profile_notifier.py ^
+REM     %ONE_RING_GLOBAL_SERVING_HOST% ^
+REM     %ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
+REM     %ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL% ^
+REM     %cd%
 REM SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_PID=$!
 
 pause

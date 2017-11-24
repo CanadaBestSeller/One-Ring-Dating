@@ -21,14 +21,14 @@ LOG_TAG = '[OKC Profile Collector] '
 
 class OkcProfileCollector:
 
-    def __init__(self, test_filepath=None):
+    def __init__(self, blacklist_filepath, test_filepath=None):
         logging.warning(LOG_TAG + 'Logging in now. This should happen very rarely.')
         self.session = OkcSession.login()
         self.test_filepath = test_filepath
+        self.blacklist_filepath = blacklist_filepath
 
-    def collect_profile(self, blacklist_folder_path):
+    def collect_profile(self):
         time.sleep(1)
-        blacklist_filepath = blacklist_folder_path + '/phase_0_collector_okc.blacklist'
 
         try:
             match_handle = self.collect_handle() if self.test_filepath is None else self.mock_collect_handle()
@@ -36,20 +36,22 @@ class OkcProfileCollector:
         except AuthenticationError:
             logging.warning(LOG_TAG + 'Encountered authentication error. Attempting to re-log')
             self.session = OkcSession.login()
-            return self.collect_profile(blacklist_folder_path)
+            return self.collect_profile()
 
-        if match_handle in FileUtils.parse_lines(blacklist_filepath):
-            logging.warning(LOG_TAG + 'Quickmatch is in blacklist! Skipping user "{0}"'.format(match_handle))
-            return self.collect_profile(blacklist_folder_path)
+        if match_handle in FileUtils.parse_lines(self.blacklist_filepath):
+            logging.warning(LOG_TAG + 'Recommendation is in blacklist! Skipping user "{0}"'.format(match_handle))
+            return self.collect_profile()
 
         try:
             image_links = self.get_okc_image_links(match_handle)
         except HTTPError:
             logging.warning(LOG_TAG + 'Encountered HTTP error while collecting user ID {0}. Re-trying.'.format(match_handle))
-            return self.collect_profile(blacklist_folder_path)
+            return self.collect_profile()
 
-        FileUtils.add_line_to_file(blacklist_filepath, match_handle)
-        return ProfileRawtext('okc', match_handle, image_links)  # TODO extract platform tag
+        FileUtils.add_line_to_file(self.blacklist_filepath, match_handle)
+
+        # TODO extract platform tag, so that it is specified by the server (caller) as input to __init__()
+        return ProfileRawtext('okc', match_handle, image_links)
 
     def collect_handle(self):
         match = self.session.quickmatch()

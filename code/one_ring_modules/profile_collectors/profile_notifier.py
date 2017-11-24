@@ -1,10 +1,12 @@
 import logging
 import json
+import random
 import socket
 import sys
 import time
 
 from one_ring_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
+from one_ring_modules.profile_collectors.tinder.tinder_profile_collector import TinderProfileCollector
 
 # Logging
 LOG_NAME = 'phase_0_collector.log'
@@ -16,14 +18,15 @@ class ProfileNotifier:
         self.destination_hostname = destination_hostname
         self.destination_port = destination_port
         self.notification_frequency = notification_frequency
-        self.blacklist_folder_path = blacklist_folder_path
 
         # Collector implementations
-        self.okc_profile_collector = OkcProfileCollector(test_filepath)
+        self.profile_collectors = [
+            OkcProfileCollector(blacklist_folder_path + '/phase_0_collector_okc.blacklist', test_filepath),
+            TinderProfileCollector(blacklist_folder_path + '/phase_0_collector_tinder.blacklist'),
+        ]
 
     def notify(self):
-        # TODO remove OKC and generify this line via an attachment pattern
-        profile_rawtext = self.okc_profile_collector.collect_profile(blacklist_folder_path=blacklist_folder_path)
+        profile_rawtext = random.choice(self.profile_collectors).collect_profile()
         logging.debug('[Notifier] Profile Collected! {0}'.format(profile_rawtext))
         try:
             destination = socket.socket()
