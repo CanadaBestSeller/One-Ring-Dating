@@ -3,7 +3,7 @@
 import re
 
 from one_ring_modules import utils
-from one_ring_modules.auth.okc.session import Session as OkcSession
+from one_ring_modules.api.okc.session import Session as OkcSession
 
 class OkcMessenger(object):
     """

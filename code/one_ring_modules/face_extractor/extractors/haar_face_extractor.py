@@ -57,11 +57,11 @@ class HaarFaceExtractor:
                 FileUtils.create_folder_if_not_exists(face_folder_path)
                 face_filepath = face_folder_path + output_filename
                 cv2.imwrite(face_filepath, face_grayscale_resized)
-                logging.info(LOG_TAG + 'FOUND 1 FACE! Saving extracted grayscale face as {0}'.format(face_filepath))
+            logging.debug(LOG_TAG + 'FOUND 1 FACE for {0}! Saving extracted grayscale face as {1}'.format(output_filename, face_filepath))
+            return True
         elif len(faces) == 0:
-            logging.debug(LOG_TAG + 'Found no faces. Not extracting any faces')
+            logging.debug(LOG_TAG + 'Found no faces for {0}. Not extracting any faces'.format(output_filename))
+            return False
         else:
-            logging.debug(LOG_TAG + 'Found multiple faces. Not extracting any faces')
-
-        logging.debug(LOG_TAG + 'Face extraction finished.\n')
-
+            logging.debug(LOG_TAG + 'Found multiple faces{0}. Not extracting any faces'.format(output_filename))
+            return False

@@ -17,7 +17,7 @@ RESULT_EXTENSION = ".jpg"
 
 # Logging
 LOG_NAME = 'phase_0_face_extractor.log'
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+LOG_FORMAT = '%(asctime)s - %(levelname)s : %(message)s'
 LOG_TAG = '[Face Extractor Server] '
 
 
@@ -53,16 +53,21 @@ class FaceExtractorServer(socketserver.BaseRequestHandler):
     def process_extraction_request(profile_rawtext):
         logging.debug(LOG_TAG + 'Processing request...\n')
         platform = profile_rawtext['platform']
-        handle = profile_rawtext['handle']
+        user_id = profile_rawtext['user_id']
         image_links = profile_rawtext['image_links']
         FileUtils.create_folder_if_not_exists(ROOT_IMAGE_FOLDER)
 
-        for index, image_link in enumerate(image_links):
-            image_filepath, image_filename = FaceExtractorServer.save_image(platform, handle, image_link, index)
-            HaarFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "haar_", image_filename)
-            # LandmarkFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "landmark_", image_filename)
+        total_extraction_count = 0
 
-        logging.debug('[Face Extractor Server] Request complete!\n\n')
+        for index, image_link in enumerate(image_links):
+            image_filepath, image_filename = FaceExtractorServer.save_image(platform, user_id, image_link, index)
+            extracted = HaarFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "haar_", image_filename)
+            # LandmarkFaceExtractor.extract_face(image_filepath, ROOT_IMAGE_FOLDER, "landmark_", image_filename)
+            if extracted:
+                total_extraction_count += 1
+
+        logging.info('[Face Extractor Server] Request complete! Extracted {0} faces. See folder "{1}"\n\n'
+                     .format(total_extraction_count, ROOT_IMAGE_FOLDER))
 
     @staticmethod
     def save_image(platform, handle, image_link, index):
@@ -87,7 +92,7 @@ def initialize_logger():
     log_formatter = logging.Formatter(LOG_FORMAT)
 
     stdout_handler = logging.StreamHandler(sys.stdout)
-    stdout_handler.setLevel(logging.DEBUG)
+    stdout_handler.setLevel(logging.INFO)
     stdout_handler.setFormatter(log_formatter)
 
     file_handler = logging.FileHandler(LOG_NAME)
@@ -106,12 +111,12 @@ if __name__ == '__main__':
 
     initialize_logger()
 
-    logging.debug('\n'
-                  '\n-----------------------------------'
-                  '\nFace Extractor Server online!'
-                  '\nServing requests @ {}:{}'
-                  '\n-----------------------------------'
-                  '\n'.format(serving_host, serving_port))
+    logging.info('\n'
+                 '\n-----------------------------------'
+                 '\nFace Extractor Server online!'
+                 '\nServing requests @ {}:{}'
+                 '\n-----------------------------------'
+                 '\n'.format(serving_host, serving_port))
 
     server = socketserver.TCPServer((serving_host, serving_port), FaceExtractorServer)
     server.request_queue_size = 5

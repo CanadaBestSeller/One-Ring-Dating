@@ -10,7 +10,7 @@ from one_ring_modules.profile_collectors.tinder.tinder_profile_collector import 
 
 # Logging
 LOG_NAME = 'phase_0_collector.log'
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+LOG_FORMAT = '%(asctime)s - %(levelname)s : %(message)s'
 
 
 class ProfileNotifier:
@@ -24,6 +24,13 @@ class ProfileNotifier:
             OkcProfileCollector(blacklist_folder_path + '/phase_0_collector_okc.blacklist', test_filepath),
             TinderProfileCollector(blacklist_folder_path + '/phase_0_collector_tinder.blacklist'),
         ]
+
+        logging.info('\n'
+                     '\n============================================'
+                     '\nProfile Notifier is running!'
+                     '\n{0}'
+                     '\n============================================'
+                     '\n'.format('\n'.join([c.__repr__() + ' is online!' for c in self.profile_collectors])))
 
     def notify(self):
         profile_rawtext = random.choice(self.profile_collectors).collect_profile()
@@ -44,7 +51,7 @@ def initialize_logger():
     log_formatter = logging.Formatter(LOG_FORMAT)
 
     stdout_handler = logging.StreamHandler(sys.stdout)
-    stdout_handler.setLevel(logging.DEBUG)
+    stdout_handler.setLevel(logging.INFO)
     stdout_handler.setFormatter(log_formatter)
 
     file_handler = logging.FileHandler(LOG_NAME)
@@ -67,11 +74,6 @@ if __name__ == '__main__':
 
     initialize_logger()
 
-    logging.debug('\n'
-                 '\n----------------------------'
-                 '\nProfile Notifier is running!'
-                 '\n----------------------------'
-                 '\n')
     try:
         profile_notifier = ProfileNotifier(dest_hostname, dest_port, notification_frequency, blacklist_folder_path, test_filepath)
         while True:

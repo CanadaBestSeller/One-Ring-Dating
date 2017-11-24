@@ -7,7 +7,7 @@ import time
 
 import requests
 
-from one_ring_modules.auth.okc.profile import Profile
+from one_ring_modules.api.okc.profile import Profile
 
 # Credentials (username & password)
 USERNAME = os.environ.get('ONE_RING_OKC_USERNAME')

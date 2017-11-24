@@ -6,8 +6,8 @@ import re
 import time
 
 from one_ring_modules.models.profile_rawtext import ProfileRawtext
-from one_ring_modules.auth.okc.session import Session as OkcSession
-from one_ring_modules.auth.okc.session import AuthenticationError
+from one_ring_modules.api.okc.session import Session as OkcSession
+from one_ring_modules.api.okc.session import AuthenticationError
 
 from requests.exceptions import HTTPError
 
@@ -39,7 +39,7 @@ class OkcProfileCollector:
             return self.collect_profile()
 
         if match_handle in FileUtils.parse_lines(self.blacklist_filepath):
-            logging.warning(LOG_TAG + 'Recommendation is in blacklist! Skipping user "{0}"'.format(match_handle))
+            logging.warning(LOG_TAG + 'Quickmatch already processed! Skipping user "{0}"'.format(match_handle))
             return self.collect_profile()
 
         try:
@@ -51,7 +51,10 @@ class OkcProfileCollector:
         FileUtils.add_line_to_file(self.blacklist_filepath, match_handle)
 
         # TODO extract platform tag, so that it is specified by the server (caller) as input to __init__()
-        return ProfileRawtext('okc', match_handle, image_links)
+        return ProfileRawtext(platform='okc',
+                              user_id=match_handle,
+                              name=None,
+                              image_links=image_links)
 
     def collect_handle(self):
         match = self.session.quickmatch()
@@ -76,6 +79,9 @@ class OkcProfileCollector:
         ))
         photo_info_xpb = xpb.div.with_class('photo').img.select_attribute_('src')
         return [OkcProfileCollector.get_okc_image_link(uri) for uri in photo_info_xpb.apply_(pics_tree)]
+
+    def __repr__(self):
+        return 'OkCupid Profile Collector'
 
     @staticmethod
     def get_okc_image_link(uri):
