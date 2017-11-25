@@ -83,14 +83,16 @@ cls
 REM We are starting the applications in a descending order to avoid connection refusal.
 
 REM Start the Face Extractor Server
-python code/one_ring_modules/face_extractor/face_extractor_server.py ^
+START /b cmd /c ^
+    python code/one_ring_modules/face_extractor/face_extractor_server.py ^
     %ONE_RING_GLOBAL_SERVING_HOST% ^
     %ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PORT%
 
 REM Start the Profile Collector/Notifier
 REM We can optionally enter a file name as the last argument, to read from a pre-fetched list of usernames, instead of OKC's quickmatch
 REM This is useful for load testing, 404 testing, and procuring training data for face selection models START /b cmd /c ^
-python code\one_ring_modules\profile_collectors\profile_notifier.py ^
+START /b cmd /c ^
+    python code\one_ring_modules\profile_collectors\profile_notifier.py ^
     %ONE_RING_GLOBAL_SERVING_HOST% ^
     %ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
     %ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL% ^
