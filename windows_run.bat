@@ -31,8 +31,11 @@ SET ONE_RING_PHASE_3_MESSENGER_EXECUTION_INTERVAL=5
 cls
 @echo off
 
-SET /p OKC_USERNAME="Enter your OkCupid username/email: "
-CALL:getPassword OKC_PASSWORD "Enter your OkCupid password (hidden): "
+SET /p ONE_RING_OKC_USERNAME="Enter your OkCupid email: "
+CALL:getPassword ONE_RING_OKC_PASSWORD "Enter your OkCupid password (hidden): "
+ECHO.
+SET /p ONE_RING_FB_EMAIL="Enter your Facebook email: "
+CALL:getPassword ONE_RING_FB_PASSWORD "Enter your Facebook password (hidden): "
 
 cls
 
@@ -79,33 +82,29 @@ cls
 
 REM We are starting the applications in a descending order to avoid connection refusal.
 
-REM Start the Face Extractor Server in the background
-START /b cmd /c ^
-    python code/one_ring_modules/face_extractor/face_extractor_server.py ^
+REM Start the Face Extractor Server
+python code/one_ring_modules/face_extractor/face_extractor_server.py ^
     %ONE_RING_GLOBAL_SERVING_HOST% ^
     %ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PORT%
-REM SET ONE_RING_PHASE_0_FACE_EXTRACTOR_SERVER_PID=$!
 
-REM Start the Profile Collector/Notifier in the background
+REM Start the Profile Collector/Notifier
 REM We can optionally enter a file name as the last argument, to read from a pre-fetched list of usernames, instead of OKC's quickmatch
 REM This is useful for load testing, 404 testing, and procuring training data for face selection models START /b cmd /c ^
-REM START /b cmd /c ^
-REM     python code\one_ring_modules\profile_collectors\profile_notifier.py ^
-REM     %ONE_RING_GLOBAL_SERVING_HOST% ^
-REM     %ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
-REM     %ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL% ^
-REM     %cd%
-REM SET ONE_RING_PHASE_0_PROFILE_NOTIFIER_PID=$!
+python code\one_ring_modules\profile_collectors\profile_notifier.py ^
+    %ONE_RING_GLOBAL_SERVING_HOST% ^
+    %ONE_RING_PHASE_0_PROFILE_NOTIFIER_DESTINATION_PORT% ^
+    %ONE_RING_PHASE_0_PROFILE_NOTIFIER_POLLING_INTERVAL% ^
+    %cd%
 
 pause
 
-REM------------------------------------------------------------------------------
+REM ------------------------------------------------------------------------------
 REM Masks user input and returns the input as a variable.
 REM Password-masking code based on http://www.dostips.com/forum/viewtopic.php?p=33538REMp33538
 REM
 REM Arguments: %1 - the variable to store the password in
 REM            %2 - the prompt to display when receiving input
-REM------------------------------------------------------------------------------
+REM ------------------------------------------------------------------------------
 :getPassword
 set "_password="
 
