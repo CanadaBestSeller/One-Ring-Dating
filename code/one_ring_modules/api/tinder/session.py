@@ -40,6 +40,7 @@ HEADERS_TEMPLATE = {
 LOG_TAG = '[Tinder API] '
 
 # Credentials (username & password)
+# TODO move this to ProfileNotifier
 FB_EMAIL = os.environ.get('ONE_RING_FB_EMAIL')
 FB_PASSWORD = os.environ.get('ONE_RING_FB_PASSWORD')
 

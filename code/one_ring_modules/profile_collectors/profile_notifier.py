@@ -20,6 +20,7 @@ class ProfileNotifier:
         self.notification_frequency = notification_frequency
 
         # Collector implementations
+        # TODO do this in a more elegant way - Profile collectors should always have a good session as a param
         self.profile_collectors = [
             OkcProfileCollector(blacklist_folder_path + '/phase_0_collector_okc.blacklist', test_filepath),
             TinderProfileCollector(blacklist_folder_path + '/phase_0_collector_tinder.blacklist'),

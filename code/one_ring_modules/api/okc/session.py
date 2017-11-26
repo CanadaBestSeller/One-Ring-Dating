@@ -10,6 +10,7 @@ import requests
 from one_ring_modules.api.okc.profile import Profile
 
 # Credentials (username & password)
+# TODO move this to ProfileNotifier
 USERNAME = os.environ.get('ONE_RING_OKC_USERNAME')
 PASSWORD = os.environ.get('ONE_RING_OKC_PASSWORD')
 
