@@ -3,22 +3,27 @@
 import re
 
 from one_ring_modules import utils
-from one_ring_modules.api.okc.session import Session as OkcSession
+
 
 class OkcMessenger(object):
+
+    @classmethod
+    def from_session(cls, session):
+        return cls(session)
+
     """
     Send Messages to an okcupid user.
     """
-    def __init__(self):
-        self.session = OkcSession.login()
+    def __init__(self, session):
+        self.session = session
 
-    def send(self, username, message, authcode=None, thread_id=None):
+    def send_message(self, username, message, authcode=None, thread_id=None):
         authcode = authcode or self._get_authcode(username)
         params = self.message_request_parameters(
             username, message, thread_id or 0, authcode
         )
         response = self.session.okc_get('mailbox', params=params)
-        return response.json()
+        return response.json()  # TODO Return a boolean indicating success/failure
 
     def _get_authcode(self, username):
         response = self.session.okc_get('profile/{0}'.format(username))
