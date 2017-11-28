@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import logging
 import json
 import random
@@ -13,8 +15,19 @@ LOG_NAME = 'phase_0_collector.log'
 LOG_FORMAT = '%(asctime)s - %(levelname)s : %(message)s'
 
 
-class ProfileNotifier:
+class ProfileNotifierFacade:
+    """
+    | Phase 0 in the One-Ring-Dating Pipeline
+    |
+    | Stand-alone aggregation of profile collectors.
+    | Upon providing correct credentials, will
+    | send notifications of type ProfileRawtext to dest_hostname:dest_port
+    | You can configure the notification_frequency and the location of a blacklist,
+    | blacklist_folder_path with which to keep track of already processed profiles
+    """
+
     def __init__(self, destination_hostname, destination_port, notification_frequency, blacklist_folder_path, test_filepath=None):
+
         self.destination_hostname = destination_hostname
         self.destination_port = destination_port
         self.notification_frequency = notification_frequency
@@ -76,7 +89,11 @@ if __name__ == '__main__':
     initialize_logger()
 
     try:
-        profile_notifier = ProfileNotifier(dest_hostname, dest_port, notification_frequency, blacklist_folder_path, test_filepath)
+        profile_notifier = ProfileNotifierFacade(dest_hostname,
+                                                 dest_port,
+                                                 notification_frequency,
+                                                 blacklist_folder_path,
+                                                 test_filepath)
         while True:
             profile_notifier.notify()
             time.sleep(notification_frequency)

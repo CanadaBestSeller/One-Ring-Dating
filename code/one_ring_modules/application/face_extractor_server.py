@@ -23,23 +23,27 @@ LOG_TAG = '[Face Extractor Server] '
 
 class FaceExtractorServer(socketserver.BaseRequestHandler):
     """
-    Handles requests from inbound port.
-    Request input must be a JSON of type ProfileRawtext (see import above)
-
-    *** This server does several things ***
-    1. Handles a request, given the platform, handle, and list of image links
-    2. Retrieves every image, marks the faces, and also saves the faces separately for analysis
-    3. Naming scheme of the processed pictures is the concatenation of the platform and handle
-
-    *** Debugging Steps ***
-    See debug_face_extractor_snippets.txt
+    | Phase 1 in the One-Ring-Dating Pipeline
+    |
+    | Handles requests from inbound port.
+    | Request input must be a JSON of type ProfileRawtext (see import above)
+    |
+    | ***This server does several things:***
+    | 1. Handles a request, given the platform, handle, and list of image links
+    | 2. Retrieves every image, marks the faces, and also saves the faces separately for analysis
+    | 3. Naming scheme of the processed pictures is the concatenation of the platform and handle
+    |
+    | *** Debugging Steps ***
+    | See face_extractor_server_debug_snippets.txt
+    |
     """
 
     # Contract
     def handle(self):
         self.data = self.request.recv(1024).strip()
         json_data = json.loads(self.data.decode())
-        logging.debug(LOG_TAG + 'Received request from {}:\n{}'.format(self.client_address[0], json.dumps(json_data, indent=4)))
+        logging.debug(LOG_TAG + 'Received request from {}:\n{}'
+                      .format(self.client_address[0], json.dumps(json_data, indent=4)))
         profile_rawtext = ProfileRawtext(**json_data)
         FaceExtractorServer.process_extraction_request(profile_rawtext)
 

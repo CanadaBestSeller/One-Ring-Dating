@@ -2,9 +2,8 @@
 # coding=utf-8
 
 import logging
-import time
 
-from one_ring_modules.api.tinder.session import Session, AuthenticationError
+from one_ring_modules.api.tinder.session import Session
 
 LOG_TAG = '[Tinder Profile Collector] '
 
@@ -12,7 +11,11 @@ LOG_TAG = '[Tinder Profile Collector] '
 class Recommendations:
 
     @classmethod
-    def from_session(cls):
+    def from_session(cls, session):
+        return cls(session)
+
+    @classmethod
+    def from_credentials(cls, email, password):
         session = Session.log_in()
         return cls(session)
 
@@ -22,15 +25,8 @@ class Recommendations:
 
     def refresh_recommendations(self):
         logging.debug(LOG_TAG + 'Caching Tinder recommendations...')
-        try:
-            rawtext_dict_recommendations = self.session.get_recommendations()
-            self.recommendations = [Recommendation.from_dict(d) for d in rawtext_dict_recommendations]
-        except AuthenticationError:
-            logging.debug(LOG_TAG + 'Session expired. Getting a new session.')
-            time.sleep(1)
-            self.session = Session.log_in()
-            logging.debug(LOG_TAG + 'New Session retrieval success.')
-
+        rawtext_dict_recommendations = self.session.get_recommendations()
+        self.recommendations = [Recommendation.from_dict(d) for d in rawtext_dict_recommendations]
         logging.info(LOG_TAG + 'Cached recommendations for {0} users.'.format(len(self.recommendations)))
 
     def get(self):
@@ -45,42 +41,43 @@ class Recommendation:
     """
     | JSON parameters available as of 2017/11/30:
     |
-    | r['_id']
-    | r['bio']
-    | r['birth_date_info']
-    | r['birth_date']
-    | r['common_friend_count']
-    | r['common_friends']
-    | r['common_like_count']
-    | r['common_likes']
-    | r['connection_count']
-    | r['content_hash']
-    | r['distance_mi']
-    | r['gender']
-    | r['group_matched']
-    | r['instagram']
-    | r['jobs']
-    | r['name']
-    | r['photos']
-    | r['ping_time']
-    | r['s_number']
-    | r['schools']
-    | r['spotify_theme_track']
-    | r['spotify_top_artists']
-    | r['teaser']
-    | r['teasers']
+    | d['_id']
+    | d['bio']
+    | d['birth_date_info']
+    | d['birth_date']
+    | d['common_friend_count']
+    | d['common_friends']
+    | d['common_like_count']
+    | d['common_likes']
+    | d['connection_count']
+    | d['content_hash']
+    | d['distance_mi']
+    | d['gender']
+    | d['group_matched']
+    | d['instagram']
+    | d['jobs']
+    | d['name']
+    | d['photos']
+    | d['ping_time']
+    | d['s_number']
+    | d['schools']
+    | d['spotify_theme_track']
+    | d['spotify_top_artists']
+    | d['teaser']
+    | d['teasers']
+    |
     | """
 
     @classmethod
-    def from_dict(cls, rawtext_dict_json):
-        return cls(rawtext_dict_json)
+    def from_dict(cls, rawtext_json_dict):
+        return cls(rawtext_json_dict)
 
-    def __init__(self, r):
-        self.id = r['_id']
-        self.name = r['name']
-        self.photo_links = [photo['url'] for photo in r['photos']]
-        self.distance_in_miles = r['distance_mi']
-        self.bio = r['bio']
+    def __init__(self, d):
+        self.id = d['_id']
+        self.name = d['name']
+        self.photo_links = [photo['url'] for photo in d['photos']]
+        self.distance_in_miles = d['distance_mi']
+        self.bio = d['bio']
 
     def __repr__(self):
         return '<{0} ({1}). {2} miles away. Photos: {3}>'.format(self.name,

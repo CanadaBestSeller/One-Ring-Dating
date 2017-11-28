@@ -3,14 +3,17 @@
 
 import copy
 import json
-import os
-import re
 import logging
+import re
+
+from one_ring_modules.api.commons.session import InvalidCredentialsException
 
 import requests
+import werkzeug
 import robobrowser
 
 TINDER_HOST_URL = 'https://api.gotinder.com'
+TINDER_HOST_V2_URL = 'https://api.gotinder.com/v2'
 MOBILE_USER_AGENT = "Tinder/7.5.3 (iPhone; iOS 10.3.2; Scale/2.00)"
 FB_AUTH_LINK = "https://www.facebook.com/v2.6/dialog/oauth?redirect_uri=fb464891386855067%3A%2F%2Fauthorize%2F" \
                "&display=touch" \
@@ -39,11 +42,6 @@ HEADERS_TEMPLATE = {
 
 LOG_TAG = '[Tinder API] '
 
-# Credentials (username & password)
-# TODO move this to ProfileNotifier
-FB_EMAIL = os.environ.get('ONE_RING_FB_EMAIL')
-FB_PASSWORD = os.environ.get('ONE_RING_FB_PASSWORD')
-
 
 class Session:
     """
@@ -52,42 +50,52 @@ class Session:
     """
 
     @classmethod
-    def log_in(cls, email=FB_EMAIL, password=FB_PASSWORD):
-        logging.warning(LOG_TAG + 'Logging in now. This should happen very rarely.')
-        fb_access_token = get_fb_access_token(email, password)  # If this fails, check email/password
-        fb_id = get_fb_id(fb_access_token)
-        fb_auth_token = get_auth_token(fb_access_token, fb_id)
-        return cls(fb_auth_token)
+    def log_in(cls, email, password):
+        if email is None or password is None:
+            return None
+        else:
+            fb_id, fb_auth_token = get_id_and_auth_token(email, password)
+            return cls(email, password, fb_id, fb_auth_token)
 
-    def __init__(self, fb_auth_token):
+    def __init__(self, email, password, fb_id, fb_auth_token):
+        self.email = email
+        self.password = password
+        self.fb_id = fb_id
         self.fb_auth_token = fb_auth_token
         self.headers = copy.deepcopy(HEADERS_TEMPLATE)
         self.headers.update({"X-Auth-Token": self.fb_auth_token})
 
+    def log_in_again(self):
+        fb_id, fb_auth_token = get_id_and_auth_token(self.email, self.password)
+        self.fb_id = fb_id
+        self.fb_auth_token = fb_auth_token
+        self.headers = copy.deepcopy(HEADERS_TEMPLATE)
+        self.headers.update({"X-Auth-Token": self.fb_auth_token})
+
+    # TODO write a retry decorator wrapper
     def get_recommendations(self):
         """
         :return: list of users that you can swipe on
         """
-        try:
-            r = requests.get('https://api.gotinder.com/user/recs', headers=self.headers)
+        r = requests.get(TINDER_HOST_URL + '/user/recs', headers=self.headers)
+        if r.ok:
             return r.json()['results']
-        except requests.exceptions.RequestException:
-            raise AuthenticationError
+        else:
+            logging.debug(LOG_TAG + 'Session expired. Getting a new session.')
+            self.log_in_again()
+            return self.get_recommendations()
 
-    def get_recommendations_v2(self):
+    def get_matches_batch(self, count):
         """
-        Supposedly has better behavior for current location
+        :return: list of users IDs which you can message
         """
-        try:
-            url = TINDER_HOST_URL + '/v2/recs/core?locale=en-US'
-            r = requests.get(url, headers=self.headers)
-            return r.json()
-        except Exception:
-            raise AuthenticationError
-
-
-class AuthenticationError:
-    pass
+        r = requests.get(TINDER_HOST_V2_URL + '/matches?count=' + str(count) + 'locale=en', headers=self.headers)
+        if r.ok:
+            return r.json()['data']['matches']
+        else:
+            logging.debug(LOG_TAG + 'Session expired. Getting a new session.')
+            self.log_in_again()
+            return self.get_recommendations()
 
 
 def get_fb_access_token(email, password):
@@ -116,3 +124,14 @@ def get_auth_token(fb_access_token, fb_id):
                                  {'facebook_token': fb_access_token, 'facebook_id': fb_id})
                              )
     return response.json()["token"]
+
+
+def get_id_and_auth_token(email, password):
+    try:
+        logging.warning(LOG_TAG + 'Logging in now. This should happen very rarely.')
+        fb_access_token = get_fb_access_token(email, password)  # If this fails, check email/password
+        fb_id = get_fb_id(fb_access_token)
+        fb_auth_token = get_auth_token(fb_access_token, fb_id)
+        return fb_id, fb_auth_token
+    except werkzeug.exceptions.BadRequestKeyError:
+        raise InvalidCredentialsException
