@@ -7,7 +7,7 @@ import os
 from one_ring_modules.utils.file_utils import FileUtils
 
 # Parameters
-CASCADE_PATH = os.path.abspath('code/one_ring_modules/face_extractor/haarcascade_frontalface_default.xml')
+CASCADE_PATH = os.path.abspath('code/one_ring_modules/components/face/extractors/haarcascade_frontalface_default.xml')
 FACE_SIZE = (100, 100)
 RESIZE_TOP_PIXELS = 300
 LOG_TAG = '[Haar Face Extractor] '
@@ -17,6 +17,8 @@ class HaarFaceExtractor:
 
     @staticmethod
     def extract_face(input_image_filepath, output_folder_path, output_prefix, output_filename):
+
+        logging.debug(LOG_TAG + 'Cascade path: ' + CASCADE_PATH)
 
         logging.debug(LOG_TAG + 'Processing image @ ' + input_image_filepath)
         logging.debug(LOG_TAG + 'Output folder @ ' + output_folder_path)

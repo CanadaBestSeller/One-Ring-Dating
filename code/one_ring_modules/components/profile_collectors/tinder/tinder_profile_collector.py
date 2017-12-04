@@ -2,7 +2,7 @@
 
 import logging
 
-from one_ring_modules.api.tinder.recommendations import Recommendations
+from one_ring_modules.layer_dao.tinder.recommendations import Recommendations
 from one_ring_modules.models.profile_rawtext import ProfileRawtext
 from one_ring_modules.utils.file_utils import FileUtils
 
@@ -11,9 +11,9 @@ LOG_TAG = '[Tinder Profile Collector] '
 
 class TinderProfileCollector:
 
-    def __init__(self, blacklist_filepath):
+    def __init__(self, email, password, blacklist_filepath):
         self.blacklist_filepath = blacklist_filepath
-        self.recommendations = Recommendations.from_session()
+        self.recommendations = Recommendations.from_credentials(email, password)
 
     def collect_profile(self):
         recommendation = self.recommendations.get()

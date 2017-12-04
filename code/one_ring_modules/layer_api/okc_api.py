@@ -3,19 +3,17 @@
 import logging
 import random
 import os
+import re
 import time
 
 import requests
 
-from one_ring_modules.api.okc.profile import Profile
+from one_ring_modules import utils
 
-# Credentials (username & password)
-# TODO move this to ProfileNotifier
-USERNAME = os.environ.get('ONE_RING_OKC_USERNAME')
-PASSWORD = os.environ.get('ONE_RING_OKC_PASSWORD')
+from one_ring_modules.layer_dao.okc.profile import Profile
 
 
-class Session(object):
+class OkcApi(object):
     """
     A `requests.Session` with convenience methods for interacting with
     okcupid.com
@@ -29,14 +27,14 @@ class Session(object):
     }
 
     @classmethod
-    def login(cls, requests_session=None, rate_limit=None):
+    def log_in(cls, username, password, requests_session=None, rate_limit=None):
         requests_session = requests_session or requests.Session()
         session = cls(requests_session, rate_limit)
         # settings.USERNAME and settings.PASSWORD should not be made
         # the defaults to their respective arguments because doing so
         # would prevent this function from picking up any changes made
         # to those values after import time.
-        session.do_login(USERNAME, PASSWORD)
+        session.do_login(username, password)
         return session
 
     def __init__(self, requests_session, rate_limit=None):
@@ -98,6 +96,31 @@ class Session(object):
         response = self.okc_get('quickmatch', params={'okc_api': 1})
         return Profile(self, response.json()['sn'])
 
+    def send_message(self, username, message, authcode=None, thread_id=None):
+        authcode = authcode or self._get_authcode(username)
+        params = self.message_request_parameters(
+            username, message, thread_id or 0, authcode
+        )
+        response = self.session.okc_get('mailbox', params=params)
+        return response.json()  # TODO Return a boolean indicating success/failure
+
+    def _get_authcode(self, username):
+        response = self.session.okc_get('profile/{0}'.format(username))
+        return get_authcode(response.content)
+
+    def message_request_parameters(self, username, message,
+                                   thread_id, authcode):
+        return {
+            'ajax': 1,
+            'sendmsg': 1,
+            'r1': username,
+            'body': message,
+            'threadid': thread_id,
+            'authcode': authcode,
+            'reply': 1 if thread_id else 0,
+            'from_profile': 1
+        }
+
 
 class RateLimiter(object):
     def __init__(self, rate_limit, wait_std_dev=None):
@@ -129,8 +152,19 @@ def build_okc_method(method_name):
 
 # This code constructs the methods okc_get(), okc_put(), okc_post(), and okc_delete()
 for method_name in ('get', 'put', 'post', 'delete'):
-    setattr(Session, 'okc_{0}'.format(method_name), build_okc_method(method_name))
+    setattr(OkcApi, 'okc_{0}'.format(method_name), build_okc_method(method_name))
 
 
 class AuthenticationError(Exception):
     pass
+
+@utils.curry
+def get_js_variable(html_response_content, variable_name):
+    return re.search('var {0} = "(.*?)";'.format(variable_name), html_response_content.decode('utf-8')).group(1)
+
+
+get_authcode = get_js_variable(variable_name='AUTHCODE')
+get_username = get_js_variable(variable_name='SCREENNAME')
+get_id = get_js_variable(variable_name='CURRENTUSERID')
+get_current_user_id = get_id
+get_my_username = get_username

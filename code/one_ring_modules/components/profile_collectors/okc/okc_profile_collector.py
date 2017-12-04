@@ -6,8 +6,7 @@ import re
 import time
 
 from one_ring_modules.models.profile_rawtext import ProfileRawtext
-from one_ring_modules.api.okc.session import Session as OkcSession
-from one_ring_modules.api.okc.session import AuthenticationError
+from one_ring_modules.layer_api.okc_api import OkcApi, AuthenticationError
 
 from requests.exceptions import HTTPError
 
@@ -21,9 +20,9 @@ LOG_TAG = '[OKC Profile Collector] '
 
 class OkcProfileCollector:
 
-    def __init__(self, blacklist_filepath, test_filepath=None):
+    def __init__(self, username, password, blacklist_filepath, test_filepath=None):
         logging.warning(LOG_TAG + 'Logging in now. This should happen very rarely.')
-        self.session = OkcSession.login()
+        self.session = OkcApi.log_in(username, password)
         self.test_filepath = test_filepath
         self.blacklist_filepath = blacklist_filepath
 
@@ -35,7 +34,7 @@ class OkcProfileCollector:
             logging.info(LOG_TAG + 'Quickmatch found! Handle = {0}'.format(match_handle))
         except AuthenticationError:
             logging.warning(LOG_TAG + 'Encountered authentication error. Attempting to re-log')
-            self.session = OkcSession.login()
+            self.session = OkcApi.login()
             return self.collect_profile()
 
         if match_handle in FileUtils.parse_lines(self.blacklist_filepath):

@@ -6,7 +6,7 @@ import json
 import logging
 import re
 
-from one_ring_modules.api.commons.session import InvalidCredentialsException
+from one_ring_modules.layer_api.one_ring_modules_api import InvalidCredentialsException
 
 import requests
 import werkzeug
@@ -43,7 +43,7 @@ HEADERS_TEMPLATE = {
 LOG_TAG = '[Tinder API] '
 
 
-class Session:
+class TinderApi:
     """
     All Tinder APIs rely on a header which serves as its only authentication
     The factory method log_in() will create a TinderSession object with an attribute "head

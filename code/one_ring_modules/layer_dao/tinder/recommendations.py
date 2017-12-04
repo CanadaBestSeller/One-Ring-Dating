@@ -3,7 +3,7 @@
 
 import logging
 
-from one_ring_modules.api.tinder.session import Session
+from one_ring_modules.layer_api.tinder_api import TinderApi
 
 LOG_TAG = '[Tinder Profile Collector] '
 
@@ -11,21 +11,21 @@ LOG_TAG = '[Tinder Profile Collector] '
 class Recommendations:
 
     @classmethod
-    def from_session(cls, session):
-        return cls(session)
+    def from_api(cls, api):
+        return cls(api)
 
     @classmethod
     def from_credentials(cls, email, password):
-        session = Session.log_in()
-        return cls(session)
+        api = TinderApi.log_in(email, password)
+        return cls(api)
 
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, api):
+        self.api = api
         self.recommendations = []
 
     def refresh_recommendations(self):
         logging.debug(LOG_TAG + 'Caching Tinder recommendations...')
-        rawtext_dict_recommendations = self.session.get_recommendations()
+        rawtext_dict_recommendations = self.api.get_recommendations()
         self.recommendations = [Recommendation.from_dict(d) for d in rawtext_dict_recommendations]
         logging.info(LOG_TAG + 'Cached recommendations for {0} users.'.format(len(self.recommendations)))
 

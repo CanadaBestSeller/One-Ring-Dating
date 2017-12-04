@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 
-import logging
 import json
+import logging
+import os
 import random
 import socket
 import sys
 import time
 
-from one_ring_modules.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
-from one_ring_modules.profile_collectors.tinder.tinder_profile_collector import TinderProfileCollector
+from one_ring_modules.components.profile_collectors.okc.okc_profile_collector import OkcProfileCollector
+from one_ring_modules.components.profile_collectors.tinder.tinder_profile_collector import TinderProfileCollector
 
 # Logging
 LOG_NAME = 'phase_0_collector.log'
 LOG_FORMAT = '%(asctime)s - %(levelname)s : %(message)s'
+
+# Credentials (username & password)
+FB_EMAIL = os.environ.get('ONE_RING_FB_EMAIL')
+FB_PASSWORD = os.environ.get('ONE_RING_FB_PASSWORD')
+
+OKC_USERNAME = os.environ.get('ONE_RING_OKC_USERNAME')
+OKC_PASSWORD = os.environ.get('ONE_RING_OKC_PASSWORD')
 
 
 class ProfileNotifierFacade:
@@ -35,8 +43,13 @@ class ProfileNotifierFacade:
         # Collector implementations
         # TODO do this in a more elegant way - Profile collectors should always have a good session as a param
         self.profile_collectors = [
-            OkcProfileCollector(blacklist_folder_path + '/phase_0_collector_okc.blacklist', test_filepath),
-            TinderProfileCollector(blacklist_folder_path + '/phase_0_collector_tinder.blacklist'),
+            OkcProfileCollector(username=OKC_USERNAME,
+                                password=OKC_PASSWORD,
+                                blacklist_filepath=blacklist_folder_path + '/phase_0_collector_okc.blacklist',
+                                test_filepath=test_filepath),
+            TinderProfileCollector(email=FB_EMAIL,
+                                   password=FB_PASSWORD,
+                                   blacklist_filepath=blacklist_folder_path + '/phase_0_collector_tinder.blacklist'),
         ]
 
         logging.info('\n'

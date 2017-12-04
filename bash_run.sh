@@ -29,9 +29,11 @@ if [ -z ${ONE_RING_OKC_USERNAME+x} ];
 else echo "OKC username is set."; fi
 
 if [ -z ${ONE_RING_OKC_PASSWORD+x} ]; 
-    then echo "Please enter your OkCupid password:"; 
+    then echo "Please enter your OkCupid password (hidden):"; 
     read -s ONE_RING_OKC_PASSWORD; export ONE_RING_OKC_PASSWORD; 
 else echo "OKC password is set."; fi
+
+echo ''
 
 if [ -z ${ONE_RING_FB_EMAIL+x} ]; 
     then echo "Please enter your Facebook email:"; 
@@ -39,7 +41,7 @@ if [ -z ${ONE_RING_FB_EMAIL+x} ];
 else echo "FB email is set."; fi
 
 if [ -z ${ONE_RING_FB_PASSWORD+x} ]; 
-    then echo "Please enter your Facebook password:"; 
+    then echo "Please enter your Facebook password (hidden):"; 
     read -s ONE_RING_FB_PASSWORD; export ONE_RING_FB_PASSWORD; 
 else echo "FB password is set."; fi
 

@@ -6,8 +6,8 @@ import socketserver
 import sys
 from urllib.request import urlretrieve
 
-from one_ring_modules.face_extractor.extractors.haar_face_extractor import HaarFaceExtractor
-from one_ring_modules.face_extractor.extractors.landmark_face_extractor import LandmarkFaceExtractor
+from one_ring_modules.components.face.extractors.haar_face_extractor import HaarFaceExtractor
+# from one_ring_modules.face_extractor.extractors.landmark_face_extractor import LandmarkFaceExtractor
 from one_ring_modules.models.profile_rawtext import ProfileRawtext
 from one_ring_modules.utils.file_utils import FileUtils
 
