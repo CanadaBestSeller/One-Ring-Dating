@@ -14,3 +14,5 @@ One dating app to rule them all.
 2. Alias Python 3 as "python", and make sure you can run "python" in command prompt from any directory.
 3. Execute windows_run.bat
 
+## Windows Instructions
+1. ssl.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED]: Install SSL Certificates for Python. See (here)[https://stackoverflow.com/questions/41691327/ssl-sslerror-ssl-certificate-verify-failed-certificate-verify-failed-ssl-c] and (here)[https://i.stack.imgur.com/bWgpe.png].

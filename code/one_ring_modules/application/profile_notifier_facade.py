@@ -32,6 +32,7 @@ class ProfileNotifierFacade:
     | send notifications of type ProfileRawtext to dest_hostname:dest_port
     | You can configure the notification_frequency and the location of a blacklist,
     | blacklist_folder_path with which to keep track of already processed profiles
+    |
     """
 
     def __init__(self, destination_hostname, destination_port, notification_frequency, blacklist_folder_path, test_filepath=None):
