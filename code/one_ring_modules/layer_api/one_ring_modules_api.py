@@ -3,3 +3,7 @@
 
 class InvalidCredentialsException(Exception):
     pass
+
+
+class RequestErrorException(Exception):
+    pass

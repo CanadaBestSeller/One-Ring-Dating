@@ -6,7 +6,7 @@ import json
 import logging
 import re
 
-from one_ring_modules.layer_api.one_ring_modules_api import InvalidCredentialsException
+from one_ring_modules.layer_api.one_ring_modules_api import InvalidCredentialsException, RequestErrorException
 
 import requests
 import werkzeug
@@ -77,7 +77,8 @@ class TinderApi:
         """
         :return: list of users that you can swipe on
         """
-        r = requests.get(TINDER_HOST_URL + '/user/recs', headers=self.headers)
+        url = TINDER_HOST_URL + '/user/recs'
+        r = requests.get(url, headers=self.headers)
         if r.ok:
             return r.json()['results']
         else:
@@ -89,13 +90,22 @@ class TinderApi:
         """
         :return: list of users IDs which you can message
         """
-        r = requests.get(TINDER_HOST_V2_URL + '/matches?count=' + str(count) + 'locale=en', headers=self.headers)
+        url = TINDER_HOST_V2_URL + '/matches?count=' + str(count) + 'locale=en'
+        r = requests.get(url, headers=self.headers)
         if r.ok:
             return r.json()['data']['matches']
         else:
             logging.debug(LOG_TAG + 'Session expired. Getting a new session.')
             self.log_in_again()
             return self.get_recommendations()
+
+    def send_message(self, match_id, message):
+        try:
+            url = TINDER_HOST_URL + '/user/matches/' + match_id
+            r = requests.post(url, headers=self.headers, data=json.dumps({"message": message}))
+            return r.json()
+        except requests.exceptions.RequestException as e:
+            raise RequestErrorException
 
 
 def get_fb_access_token(email, password):
