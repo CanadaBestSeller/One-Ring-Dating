@@ -18,14 +18,11 @@ class Matches:
     def __init__(self, api):
         self.api = api
 
-    def get_batch(self, count=60):
+    # We are throttled @ 20 matches.
+    # TODO: collect paginated matches to get ALL inbox matches OR systematically remove no-reply matches
+    def get_all_in_inbox(self, count=20):
         rawtext_dict_matches = self.api.get_matches_batch(count)
         return [Match.from_dict(d) for d in rawtext_dict_matches]
-
-    def get_all_matches_in_inbox(self):
-        return [Match.from_name_and_id('no-messages', '53a76473e3e8ad41798cefb25434d8af477cbc69782900d0'),
-                Match.from_name_and_id('no-reply', '533e1df4f483f84e0e00323153a76473e3e8ad41798cefb2'),
-                Match.from_name_and_id('she-replied', '53a76473e3e8ad41798cefb259e53d637f4f68c8526edb99')]
 
 
 class Match:
@@ -55,19 +52,21 @@ class Match:
 
     @classmethod
     def from_dict(cls, d):
-        id = d['_id']
+        match_id = d['_id']
         name = d['person']['name']
         photo_links = [photo['url'] for photo in d['person']['photos']]
-        return cls(id, name, photo_links)
+        is_empty_conversation = len(d['messages']) is 0
+        return cls(match_id, name, photo_links, is_empty_conversation)
 
     @classmethod
-    def from_name_and_id(cls, name, id):
-        return cls(id=id, name=name, photo_links=[])
+    def from_name_and_id(cls, name, match_id, is_empty_conversation):
+        return cls(match_id=match_id, name=name, photo_links=[], is_empty_conversation=is_empty_conversation)
 
-    def __init__(self, id, name, photo_links):
-        self.id = id
+    def __init__(self, match_id, name, photo_links, is_empty_conversation):
+        self.match_id = match_id
         self.name = name
         self.photo_links = photo_links
+        self.is_empty_conversation = is_empty_conversation
 
     def __repr__(self):
         return '<Match: {0} ({1}). Photos: {2}>'.format(self.name,

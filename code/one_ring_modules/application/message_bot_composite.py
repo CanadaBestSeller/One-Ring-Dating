@@ -8,12 +8,11 @@ import time
 from one_ring_modules.layer_api.tinder_api import TinderApi
 from one_ring_modules.layer_api.okc_api import OkcApi
 
+from one_ring_modules.components.message_bot import MessageBot
+
 from one_ring_modules.layer_dao.commons.local_file_matches import LocalFileMatches
-from one_ring_modules.layer_dao.tinder.matches import Matches as TinderMatches
 from one_ring_modules.layer_dao.tinder.messenger import Messenger as TinderMessenger
 from one_ring_modules.layer_dao.okc.messenger import Messenger as OkcMessenger
-
-from one_ring_modules.components.message_bot import MessageBot
 
 # Logging
 LOG_NAME = 'phase_3_message_bot.log'
@@ -40,21 +39,19 @@ class MessageBotComposite:
 
         self.message_bots = []
 
-        # Tinder Bot
+        # Tinder Bot - does NOT require a local file of match IDs. Scans the inbox instead
         tinder_api = TinderApi.log_in(FB_EMAIL, FB_PASSWORD)
         if tinder_api is not None:
-            tinder_message_bot = MessageBot('Tinder',
-                                            TinderMatches.from_api(tinder_api),
-                                            TinderMessenger.from_api(tinder_api, log_only=True))
+            tinder_message_bot = TinderMessenger.from_api(tinder_api)
             self.message_bots.append(tinder_message_bot)
 
-        # OKC Bot
-        okc_api = OkcApi.log_in(OKC_USERNAME, OKC_PASSWORD)
-        if okc_api is not None:
-            tinder_message_bot = MessageBot('OKC',
-                                            LocalFileMatches.from_mock_data(),
-                                            OkcMessenger.from_api(okc_api, log_only=True))
-            self.message_bots.append(tinder_message_bot)
+        # OKC Bot -requires a local file of match IDs
+        # okc_api = OkcApi.log_in(OKC_USERNAME, OKC_PASSWORD)
+        # if okc_api is not None:
+        #     tinder_message_bot = MessageBot('OKC',
+        #                                     LocalFileMatches.from_mock_data(),
+        #                                     OkcMessenger.from_api(okc_api, log_only=True))
+        #     self.message_bots.append(tinder_message_bot)
 
         logging.info('\n'
                      '\n============================================'

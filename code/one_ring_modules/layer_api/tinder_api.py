@@ -100,12 +100,14 @@ class TinderApi:
             return self.get_recommendations()
 
     def send_message(self, match_id, message):
-        try:
-            url = TINDER_HOST_URL + '/user/matches/' + match_id
-            r = requests.post(url, headers=self.headers, data=json.dumps({"message": message}))
+        url = TINDER_HOST_URL + '/user/matches/' + match_id
+        r = requests.post(url, headers=self.headers, data=json.dumps({"message": message}))
+        if r.ok:
             return r.json()
-        except requests.exceptions.RequestException as e:
-            raise RequestErrorException
+        else:
+            logging.debug(LOG_TAG + 'Session expired. Getting a new session.')
+            self.log_in_again()
+            return self.send_message(match_id, message)
 
 
 def get_fb_access_token(email, password):
