@@ -51,11 +51,11 @@ class TinderApi:
 
     @classmethod
     def log_in(cls, email, password):
-        if email is None or password is None:
-            return None
-        else:
-            fb_id, fb_auth_token = get_id_and_auth_token(email, password)
-            return cls(email, password, fb_id, fb_auth_token)
+        """
+        :raises: InvalidCredentialsException if credentials are incorrect
+        """
+        fb_id, fb_auth_token = get_id_and_auth_token(email, password)
+        return cls(email, password, fb_id, fb_auth_token)
 
     def __init__(self, email, password, fb_id, fb_auth_token):
         self.email = email
@@ -144,6 +144,7 @@ def get_id_and_auth_token(email, password):
         fb_access_token = get_fb_access_token(email, password)  # If this fails, check email/password
         fb_id = get_fb_id(fb_access_token)
         fb_auth_token = get_auth_token(fb_access_token, fb_id)
+        logging.info(LOG_TAG + 'Log in success!')
         return fb_id, fb_auth_token
     except werkzeug.exceptions.BadRequestKeyError:
         raise InvalidCredentialsException

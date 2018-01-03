@@ -127,6 +127,6 @@ if __name__ == '__main__':
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        logging.debug(LOG_TAG + 'Shutting down server...')
+        logging.info(LOG_TAG + 'Shutting down server...')
         server.shutdown()
-        logging.debug(LOG_TAG + 'Done!\n')
+        logging.info(LOG_TAG + 'Done!\n')

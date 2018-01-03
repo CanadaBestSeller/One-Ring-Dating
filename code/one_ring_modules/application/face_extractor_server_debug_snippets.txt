@@ -16,7 +16,7 @@ import socket
 from one_ring_modules.models.profile_rawtext import ProfileRawtext
 
 face_extractor_endpoint = socket.socket()
-face_extractor_endpoint.connect(('localhost', int(7000)))
+face_extractor_endpoint.connect(('localhost', int(26673)))
 image_links = [
 'https://i.pinimg.com/736x/8a/0d/a8/8a0da86c832393adfbcf9537cf328549--brown-hair-colors-dark-brown-color.jpg',
 'http://zntent.com/wp-content/uploads/2014/11/alison-brie-04.jpg',
@@ -24,5 +24,8 @@ image_links = [
 'http://static1.refinery29.com/bin/entry/2dc/x,80/1147896/alison-brie-community2.jpg',
 'https://friskyforks.com/wp-content/uploads/2017/02/brie-cheese.jpg'
 ]
-profile = ProfileRawtext('okc', 'alison-brie', image_links)
+profile = ProfileRawtext(platform='okc',
+                         user_id='alison-brie',
+                         name='Alison',
+                         image_links=image_links)
 face_extractor_endpoint.send(json.dumps(profile).encode())
